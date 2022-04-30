@@ -13,14 +13,14 @@
     "service_worker": "background.js"
   },
   "web_accessible_resources": [{
-    "resources": ["public/keyboard.html", "src/keyboard.js", "simple-keyboard/build/css/index.css"],
+    "resources": ["contentScript.css"],
     "matches": ["<all_urls>"]
   }],
   "action": {
     "default_title": "Chrome Simple Keyboard",
     "default_popup": "popup.html"
   },
-  "permissions": ["storage", "tabs", "<all_urls>"],
+  "permissions": ["storage", "tabs"],
   "content_scripts": [
     {
       "matches": [

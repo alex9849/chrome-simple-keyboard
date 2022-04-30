@@ -1,5 +1,8 @@
 'use strict';
 
+import Keyboard from 'simple-keyboard';
+import './contentScript.css';
+
 // Content script file will run in the context of web page.
 // With content script you can manipulate the web pages using
 // Document Object Model (DOM).
@@ -12,6 +15,8 @@
 // See https://developer.chrome.com/extensions/content_scripts
 
 // Log `title` of current active web page
+
+/*
 const pageTitle = document.head.getElementsByTagName('title')[0].innerHTML;
 console.log(
   `Page title is: '${pageTitle}' - evaluated by Chrome extension's 'contentScript.js' file`
@@ -41,3 +46,34 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   sendResponse({});
   return true;
 });
+*/
+
+
+var contentScript;
+var input;
+var inputList;
+
+function setup() {
+    var baseUrl = "";
+    if (chrome && chrome.extension && chrome.extension.getURL) {
+        baseUrl = chrome.extension.getURL("");
+    }
+    let styleElement = document.createElement('link')
+    styleElement.rel = 'stylesheet'
+    styleElement.href = chrome.runtime.getURL('contentScript.css')
+    console.log(styleElement.href)
+    document.head.appendChild(styleElement);
+
+    let keyboardElement = document.createElement('div')
+    keyboardElement.className = 'simple-keyboard'
+    document.body.append(keyboardElement)
+
+    const keyboard = new Keyboard({
+        onKeyPress: button => this.onKeyPress(button)
+    });
+}
+
+function onKeyPress(button) {
+
+}
+setup()
