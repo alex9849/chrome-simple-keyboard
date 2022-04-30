@@ -2,7 +2,7 @@
   "manifest_version": 3,
   "name": "Chrome Simple Keyboard",
   "version": "0.1.0",
-  "description": "My Chrome Extension",
+  "description": "A native virtual keyboard based on the simple-keyboard package",
   "icons": {
     "16": "icons/icon_16.png",
     "32": "icons/icon_32.png",
@@ -12,13 +12,15 @@
   "background": {
     "service_worker": "background.js"
   },
+  "web_accessible_resources": [{
+    "resources": ["public/keyboard.html", "src/keyboard.js", "simple-keyboard/build/css/index.css"],
+    "matches": ["<all_urls>"]
+  }],
   "action": {
     "default_title": "Chrome Simple Keyboard",
     "default_popup": "popup.html"
   },
-  "permissions": [
-    "storage"
-  ],
+  "permissions": ["storage", "tabs", "<all_urls>"],
   "content_scripts": [
     {
       "matches": [
