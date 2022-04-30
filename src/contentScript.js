@@ -51,6 +51,8 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 
 var contentScript;
 var keyboard;
+var keyboardElement;
+var inputElement;
 
 function setup() {
     var baseUrl = "";
@@ -63,13 +65,20 @@ function setup() {
     console.log(styleElement.href)
     document.head.appendChild(styleElement);
 
-    let keyboardElement = document.createElement('div')
+    keyboardElement = document.createElement('div')
     keyboardElement.className = 'simple-keyboard'
+    keyboardElement.onmousedown = e => e.preventDefault()
     document.body.append(keyboardElement)
+
+    const delegate = (selector) => (cb) => (e) => e.target.matches(selector) && cb(e);
+    const inputDelegate = delegate('input');
+    document.body.addEventListener('focusin', inputDelegate((el) => onFocus(el)));
+    document.body.addEventListener('focusout', inputDelegate((el) =>onFocusOut(el)));
 
     keyboard = new Keyboard({
         onKeyPress: button => onKeyPress(button)
     });
+    showKeyboard(false)
 }
 
 function onKeyPress(button) {
@@ -77,6 +86,31 @@ function onKeyPress(button) {
     if (button === "{shift}" || button === "{lock}") {
         handleShift();
     }
+    inputElement.dispatchEvent(new Event("change", { bubbles: true }));
+    inputElement.dispatchEvent(new Event("input", { bubbles: true }));
+    inputElement.dispatchEvent(
+        new Event("keydown", {'key': button})
+    );
+}
+
+function showKeyboard(show) {
+    if(show) {
+        keyboardElement.style = ""
+    } else {
+        keyboardElement.style = "display: none"
+    }
+}
+
+function onFocus(e) {
+    inputElement = e.target
+    showKeyboard(true)
+    console.log("Focus")
+}
+
+function onFocusOut(e) {
+    inputElement = null
+    showKeyboard(false)
+    console.log("Blur")
 }
 
 function handleShift() {
