@@ -50,8 +50,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 
 
 var contentScript;
-var input;
-var inputList;
+var keyboard;
 
 function setup() {
     var baseUrl = "";
@@ -68,12 +67,24 @@ function setup() {
     keyboardElement.className = 'simple-keyboard'
     document.body.append(keyboardElement)
 
-    const keyboard = new Keyboard({
-        onKeyPress: button => this.onKeyPress(button)
+    keyboard = new Keyboard({
+        onKeyPress: button => onKeyPress(button)
     });
 }
 
 function onKeyPress(button) {
+    console.log(button)
+    if (button === "{shift}" || button === "{lock}") {
+        handleShift();
+    }
+}
 
+function handleShift() {
+    let currentLayout = keyboard.options.layoutName;
+    let shiftToggle = currentLayout === "default" ? "shift" : "default";
+
+    keyboard.setOptions({
+        layoutName: shiftToggle
+    });
 }
 setup()
