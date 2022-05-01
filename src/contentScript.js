@@ -118,13 +118,11 @@ function showKeyboard(show) {
 function onFocus(e) {
     inputElement = e.target
     showKeyboard(true)
-    console.log("Focus")
 }
 
 function onFocusOut(e) {
     inputElement = null
     showKeyboard(false)
-    console.log("Blur")
 }
 
 function handleShift() {
