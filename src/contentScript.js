@@ -76,12 +76,16 @@ function onKeyPress(button) {
         case "{tab}":
             break
         case "{space}":
-            break
+            button = " "
         default:
-            inputElement.value = inputElement.value.substr(0, pos) + button + inputElement.value.substr(posEnd);
-            inputElement.selectionStart = pos + 1;
-            inputElement.selectionEnd = pos + 1;
-            performNativeKeyPress(inputElement, String(button).charCodeAt(0))
+            for(let char of button) {
+                inputElement.value = inputElement.value.substr(0, pos) + char + inputElement.value.substr(posEnd);
+                inputElement.selectionStart = pos + 1;
+                inputElement.selectionEnd = pos + 1;
+                pos = inputElement.selectionStart;
+                posEnd = inputElement.selectionEnd;
+                performNativeKeyPress(inputElement, String(char).charCodeAt(0))
+            }
             break
     }
 }
