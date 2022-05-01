@@ -3,52 +3,6 @@
 import Keyboard from 'simple-keyboard';
 import './contentScript.css';
 
-// Content script file will run in the context of web page.
-// With content script you can manipulate the web pages using
-// Document Object Model (DOM).
-// You can also pass information to the parent extension.
-
-// We execute this script by making an entry in manifest.json file
-// under `content_scripts` property
-
-// For more information on Content Scripts,
-// See https://developer.chrome.com/extensions/content_scripts
-
-// Log `title` of current active web page
-
-/*
-const pageTitle = document.head.getElementsByTagName('title')[0].innerHTML;
-console.log(
-  `Page title is: '${pageTitle}' - evaluated by Chrome extension's 'contentScript.js' file`
-);
-
-// Communicate with background file by sending a message
-chrome.runtime.sendMessage(
-  {
-    type: 'GREETINGS',
-    payload: {
-      message: 'Hello, my name is Con. I am from ContentScript.',
-    },
-  },
-  response => {
-    console.log(response.message);
-  }
-);
-
-// Listen for message
-chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
-  if (request.type === 'COUNT') {
-    console.log(`Current count is ${request.payload.count}`);
-  }
-
-  // Send an empty response
-  // See https://github.com/mozilla/webextension-polyfill/issues/130#issuecomment-531531890
-  sendResponse({});
-  return true;
-});
-*/
-
-
 var contentScript;
 var keyboard;
 var keyboardElement;
@@ -67,12 +21,16 @@ function setup() {
     document.head.appendChild(styleElement);
 
     keyboardElement = document.createElement('div')
-    keyboardElement.className = 'simple-keyboard'
+    keyboardElement.id = "virtual-keyboard"
     keyboardElement.onmousedown = e => e.preventDefault()
     document.body.append(keyboardElement)
 
+    let keyboardWrapper = document.createElement('div')
+    keyboardWrapper.className = 'keyboard-wrapper simple-keyboard'
+    keyboardElement.append(keyboardWrapper)
+
     const delegate = (selector) => (cb) => (e) => e.target.matches(selector) && cb(e);
-    const inputDelegate = delegate('input[type=text], textarea, input[type=password], input:not([type])');
+    const inputDelegate = delegate('input, input:not([type])');
     document.body.addEventListener('focusin', inputDelegate((el) => onFocus(el)));
     document.body.addEventListener('focusout', inputDelegate((el) =>onFocusOut(el)));
 
@@ -107,9 +65,12 @@ function showKeyboard(show) {
             keyboardHideTask = null;
         }
         keyboardElement.style = ""
+        let keyboardHeight = keyboardElement.offsetHeight
+        document.body.style = "padding-bottom: " + String(keyboardHeight) + "px !important"
     } else {
         keyboardHideTask = setTimeout(() => {
             keyboardElement.style = "display: none"
+            document.body.style = ""
             keyboardHideTask = null;
         })
     }
