@@ -3,8 +3,7 @@
 import Keyboard from 'simple-keyboard';
 import './contentScript.css';
 
-const querySelector = 'input[type=text], input[type=number], input[type=password], input[type=search],textarea'
-var contentScript;
+const querySelector = 'input[type=text], input[type=url], input[type=number], input[type=password], input[type=search],textarea'
 var keyboard;
 var keyboardElement;
 var inputElement;
@@ -44,6 +43,10 @@ function onKeyPress(button) {
     }
     var pos = inputElement.selectionStart;
     var posEnd = inputElement.selectionEnd;
+    if (inputElement.type.toLowerCase() === 'number' && button !== "{tab}") {
+        onKeyPressNumeric(button)
+        return;
+    }
 
     switch (button) {
         case "{shift}":
@@ -57,7 +60,9 @@ function onKeyPress(button) {
                 inputElement.selectionStart = pos + 1;
                 inputElement.selectionEnd = pos + 1;
             } else {
-                //TODO
+                //document.querySelector('').
+                //console.log(inputElement)
+                //inputElement.from.submit()
             }
             performNativeKeyPress(inputElement, 13);
             break
@@ -94,6 +99,14 @@ function onKeyPress(button) {
             }
             break
     }
+}
+
+function onKeyPressNumeric(button) {
+    if(![0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 0].some(x => String(x) === button)) {
+        return
+    }
+    inputElement.value = String(inputElement.value) + button
+    performNativeKeyPress(inputElement, String(button).charCodeAt(0))
 }
 
 function performNativeKeyPress(element, keyCode) {
