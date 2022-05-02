@@ -3,6 +3,7 @@
 import Keyboard from 'simple-keyboard';
 import './contentScript.css';
 
+const querySelector = 'input[type=text], input[type=number], input[type=password], input[type=search],textarea'
 var contentScript;
 var keyboard;
 var keyboardElement;
@@ -26,7 +27,7 @@ function setup() {
     keyboardElement.append(keyboardWrapper)
 
     const delegate = (selector) => (cb) => (e) => e.target.matches(selector) && cb(e);
-    const inputDelegate = delegate('input, textarea, input:not([type])');
+    const inputDelegate = delegate(querySelector);
     document.body.addEventListener('focusin', inputDelegate((el) => onFocus(el)));
     document.body.addEventListener('focusout', inputDelegate((el) =>onFocusOut(el)));
 
@@ -74,6 +75,11 @@ function onKeyPress(button) {
             performNativeKeyPress(inputElement, 8);
             break
         case "{tab}":
+            let inputList = Array.from(document.querySelectorAll(querySelector))
+            console.log(inputList)
+            let index = inputList.indexOf(inputElement);
+            console.log(index)
+            inputList[(index + 1) % inputList.length].focus();
             break
         case "{space}":
             button = " "
