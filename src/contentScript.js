@@ -20,7 +20,6 @@ function setup() {
     keyboardElement.id = "virtual-keyboard"
     keyboardElement.onmousedown = e => e.preventDefault()
     document.body.append(keyboardElement)
-
     let keyboardWrapper = document.createElement('div')
     keyboardWrapper.className = 'keyboard-wrapper simple-keyboard'
     keyboardElement.append(keyboardWrapper)
@@ -29,11 +28,28 @@ function setup() {
     const inputDelegate = delegate(querySelector);
     document.body.addEventListener('focusin', inputDelegate((el) => onFocus(el)));
     document.body.addEventListener('focusout', inputDelegate((el) =>onFocusOut(el)));
+    ['pointerdown', 'mousedown', 'pointerup', 'mouseup', 'click'].forEach(key => {
+        window.addEventListener(key, event => {
+            if(isChildElement(event.target, keyboardElement)) {
+                event.preventDefault()
+            }
+        }, true);
+    });
 
     keyboard = new Keyboard({
         onKeyPress: button => onKeyPress(button)
     });
     showKeyboard(false)
+}
+
+function isChildElement(child, target) {
+    if(target === child) {
+        return true
+    }
+    if(!!child.parentElement) {
+        return isChildElement(child.parentElement, target)
+    }
+    return false
 }
 
 function onKeyPress(button) {
