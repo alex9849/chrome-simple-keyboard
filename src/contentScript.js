@@ -65,7 +65,7 @@ function setup() {
         display: {
             "{tab}": "↹",
             "{bksp}": "⌫",
-            "{downkeyboard}": "🞃",
+            "{downkeyboard}": "\u25BC",
             "{space}": " ",
             "{lock}": "⇪",
             "{shift}": "⇧",
