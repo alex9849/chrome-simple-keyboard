@@ -2,11 +2,12 @@
 
 import Keyboard from 'simple-keyboard';
 import './contentScript.css';
-import layout from "simple-keyboard-layouts/build/layouts/german";
+import germanLayout from "simple-keyboard-layouts/build/layouts/german";
+import englishLayout from "simple-keyboard-layouts/build/layouts/english"
 
 
 const numericLayout = {
-    default: ["1 2 3", "4 5 6", "7 8 9", "{bksp} 0 {tab}"],
+    default: ["1 2 3", "4 5 6", "7 8 9", "{tab} 0 {bksp}"],
 }
 
 const querySelector = 'input[type=text], input[type=url], input[type=number], input[type=password], input[type=search],textarea'
@@ -14,8 +15,21 @@ var keyboard;
 var keyboardElement;
 var inputElement;
 var keyboardHideTask = null;
+var languageLayout = englishLayout
 
 function setup() {
+    chrome.storage.sync.get({
+        language: 'english',
+    }, function(items) {
+        switch (items.language) {
+            case 'german':
+                languageLayout = germanLayout
+                break
+            default:
+                languageLayout = englishLayout
+        }
+    });
+
     let styleElement = document.createElement('link')
     styleElement.rel = 'stylesheet'
     styleElement.href = chrome.runtime.getURL('contentScript.css')
@@ -44,7 +58,7 @@ function setup() {
 
     keyboard = new Keyboard({
         onKeyPress: button => onKeyPress(button),
-        ...layout
+        ...languageLayout
     });
     showKeyboard(false)
 }
@@ -182,7 +196,7 @@ function onFocus(e) {
         })
     } else {
         keyboard.setOptions({
-            ...layout,
+            ...languageLayout,
             layoutName: "default"
         })
     }

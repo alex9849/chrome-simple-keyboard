@@ -17,8 +17,11 @@
     "matches": ["<all_urls>"]
   }],
   "action": {
-    "default_title": "Chrome Simple Keyboard",
-    "default_popup": "popup.html"
+    "default_title": "Chrome Simple Keyboard"
+  },
+  "options_ui": {
+    "page": "options.html",
+    "open_in_tab": true
   },
   "permissions": ["storage", "tabs"],
   "content_scripts": [
