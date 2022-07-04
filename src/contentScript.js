@@ -90,7 +90,7 @@ function onKeyPress(button) {
             if (posEnd === pos) {
                 pos = pos - 1;
             }
-            inputElement.value = inputElement.value.substr(0, pos) + inputElement.value.substr(posEnd);
+            inputElement.value = String(inputElement.value).substr(0, pos) + String(inputElement.value).substr(posEnd);
             inputElement.selectionStart = pos;
             inputElement.selectionEnd = pos;
             performNativeKeyPress(inputElement, 8);
@@ -118,10 +118,17 @@ function onKeyPress(button) {
 }
 
 function onKeyPressNumeric(button) {
-    if(![0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 0].some(x => String(x) === button)) {
+    if(![0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 0, '{bksp}'].some(x => String(x) === button)) {
         return
     }
-    inputElement.value = String(inputElement.value) + button
+    if(button === "{bksp}") {
+        const strValue = String(inputElement.value)
+        if(strValue.length > 0) {
+            inputElement.value = strValue.substring(0, strValue.length - 1)
+        }
+    } else {
+        inputElement.value = String(inputElement.value) + button
+    }
     performNativeKeyPress(inputElement, String(button).charCodeAt(0))
 }
 
