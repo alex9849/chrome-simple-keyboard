@@ -6,7 +6,7 @@ import layout from "simple-keyboard-layouts/build/layouts/german";
 
 
 const numericLayout = {
-    default: ["1 2 3", "4 5 6", "7 8 9", " 0 ", "{bksp}"],
+    default: ["1 2 3", "4 5 6", "7 8 9", "{bksp} 0 {tab}"],
 }
 
 const querySelector = 'input[type=text], input[type=url], input[type=number], input[type=password], input[type=search],textarea'
@@ -148,6 +148,7 @@ function performNativeKeyPress(element, keyCode) {
 }
 
 function showKeyboard(show) {
+    const dialogs = document.querySelectorAll('.fixed-full')
     if(show) {
         if(keyboardHideTask != null) {
             clearTimeout(keyboardHideTask)
@@ -155,12 +156,19 @@ function showKeyboard(show) {
         }
         keyboardElement.style = ""
         let keyboardHeight = keyboardElement.offsetHeight
-        document.body.style = "padding-bottom: " + String(keyboardHeight) + "px !important"
+        const style = "padding-bottom: " + String(keyboardHeight) + "px !important"
+        document.body.style = style
+        for(let fixed of dialogs) {
+            fixed.style = style
+        }
     } else {
         keyboardHideTask = setTimeout(() => {
             keyboardElement.style = "display: none"
             document.body.style = ""
             keyboardHideTask = null;
+            for(const fixed of dialogs) {
+                fixed.style = ""
+            }
         })
     }
 }
