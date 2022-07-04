@@ -7,7 +7,7 @@ import englishLayout from "simple-keyboard-layouts/build/layouts/english"
 
 
 const numericLayout = {
-    default: ["1 2 3", "4 5 6", "7 8 9", "{tab} 0 {bksp}"],
+    default: ["1 2 3", "4 5 6", "7 8 9", "{tab} 0 {bksp} {downkeyboard}"],
 }
 
 const querySelector = 'input[type=text], input[type=url], input[type=number], input[type=password], input[type=search],textarea'
@@ -28,6 +28,8 @@ function setup() {
             default:
                 languageLayout = englishLayout
         }
+        const keyRows = languageLayout.layout.default;
+        keyRows[keyRows.length - 1] += " {downkeyboard}"
     });
 
     let styleElement = document.createElement('link')
@@ -47,6 +49,7 @@ function setup() {
     const delegate = (selector) => (cb) => (e) => e.target.matches(selector) && cb(e);
     const inputDelegate = delegate(querySelector);
     document.body.addEventListener('focusin', inputDelegate((el) => onFocus(el)));
+    document.body.addEventListener('click', inputDelegate((el) => onFocus(el)));
     document.body.addEventListener('focusout', inputDelegate((el) =>onFocusOut(el)));
     ['pointerdown', 'mousedown', 'pointerup', 'mouseup', 'click'].forEach(key => {
         window.addEventListener(key, event => {
@@ -58,7 +61,16 @@ function setup() {
 
     keyboard = new Keyboard({
         onKeyPress: button => onKeyPress(button),
-        ...languageLayout
+        ...languageLayout,
+        display: {
+            "{tab}": "↹",
+            "{bksp}": "⌫",
+            "{downkeyboard}": "🞃",
+            "{space}": " ",
+            "{lock}": "⇪",
+            "{shift}": "⇧",
+            "{enter}": "↵"
+        }
     });
     showKeyboard(false)
 }
@@ -80,7 +92,7 @@ function onKeyPress(button) {
     }
     var pos = inputElement.selectionStart;
     var posEnd = inputElement.selectionEnd;
-    if (inputElement.type.toLowerCase() === 'number' && button !== "{tab}") {
+    if (inputElement.type.toLowerCase() === 'number' && button !== "{tab}" && button !== "{downkeyboard}") {
         onKeyPressNumeric(button)
         return;
     }
@@ -122,6 +134,9 @@ function onKeyPress(button) {
             let index = inputList.indexOf(inputElement);
             console.log(index)
             inputList[(index + 1) % inputList.length].focus();
+            break
+        case "{downkeyboard}":
+            showKeyboard(false)
             break
         case "{space}":
             button = " "
