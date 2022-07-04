@@ -2,6 +2,12 @@
 
 import Keyboard from 'simple-keyboard';
 import './contentScript.css';
+import layout from "simple-keyboard-layouts/build/layouts/german";
+
+
+const numericLayout = {
+    default: ["1 2 3", "4 5 6", "7 8 9", " 0 ", "{bksp}"],
+}
 
 const querySelector = 'input[type=text], input[type=url], input[type=number], input[type=password], input[type=search],textarea'
 var keyboard;
@@ -37,7 +43,8 @@ function setup() {
     });
 
     keyboard = new Keyboard({
-        onKeyPress: button => onKeyPress(button)
+        onKeyPress: button => onKeyPress(button),
+        ...layout
     });
     showKeyboard(false)
 }
@@ -160,6 +167,17 @@ function showKeyboard(show) {
 
 function onFocus(e) {
     inputElement = e.target
+    if(e.target.type.toLowerCase() === 'number') {
+        keyboard.setOptions({
+            layout: numericLayout,
+            layoutName: "default"
+        })
+    } else {
+        keyboard.setOptions({
+            ...layout,
+            layoutName: "default"
+        })
+    }
     showKeyboard(true)
 }
 
