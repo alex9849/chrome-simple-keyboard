@@ -216,6 +216,7 @@ function onFocus(e) {
         })
     }
     showKeyboard(true)
+    inputElement.scrollIntoView({ behavior: 'smooth' });
 }
 
 function onFocusOut(e) {
