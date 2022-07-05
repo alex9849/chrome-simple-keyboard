@@ -15,7 +15,8 @@ var keyboard;
 var keyboardElement;
 var inputElement;
 var keyboardHideTask = null;
-var languageLayout = englishLayout
+var languageLayout = englishLayout;
+var shiftPressed = false;
 
 function setup() {
     chrome.storage.sync.get({
@@ -99,8 +100,10 @@ function onKeyPress(button) {
 
     switch (button) {
         case "{shift}":
+            handleShiftPress();
+            break
         case "{lock}":
-            handleShift();
+            handleCapsLockPressed();
             break
         case "{enter}":
             if(inputElement.tagName.toLowerCase() === "textarea") {
@@ -118,7 +121,7 @@ function onKeyPress(button) {
         case "{bksp}":
             if (posEnd === 0) {
                 performNativeKeyPress(inputElement, 8);
-                return;
+                break;
             }
             if (posEnd === pos) {
                 pos = pos - 1;
@@ -150,6 +153,10 @@ function onKeyPress(button) {
                 performNativeKeyPress(inputElement, String(char).charCodeAt(0))
             }
             break
+    }
+
+    if (button !== "{shift}") {
+        disableShiftPress()
     }
 }
 
@@ -224,7 +231,24 @@ function onFocusOut(e) {
     showKeyboard(false)
 }
 
-function handleShift() {
+function handleShiftPress() {
+    shiftPressed = !shiftPressed
+    toggleShiftLayout()
+}
+
+function handleCapsLockPressed() {
+    toggleShiftLayout()
+}
+
+function disableShiftPress() {
+    if(!shiftPressed) {
+        return
+    }
+    shiftPressed = false
+    toggleShiftLayout()
+}
+
+function toggleShiftLayout() {
     let currentLayout = keyboard.options.layoutName;
     let shiftToggle = currentLayout === "default" ? "shift" : "default";
 
