@@ -25,7 +25,7 @@ jobs:
       run: |
         npm install
         npm run build
-        cd build && zip chrome-simple-keyboard.zip ./* && cd ..
+        cd build && zip -r chrome-simple-keyboard.zip ./* && cd ..
         mv build/chrome-simple-keyboard.zip chrome-simple-keyboard.zip
     - name: Archive extension
       uses: actions/upload-artifact@v2
