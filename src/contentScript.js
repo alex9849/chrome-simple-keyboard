@@ -17,6 +17,8 @@ var inputElement;
 var keyboardHideTask = null;
 var languageLayout = englishLayout;
 var shiftPressed = false;
+var isMouseDown = false;
+var isFocus = false;
 
 function setup() {
     chrome.storage.sync.get({
@@ -49,15 +51,25 @@ function setup() {
 
     const delegate = (selector) => (cb) => (e) => e.target.matches(selector) && cb(e);
     const inputDelegate = delegate(querySelector);
-    document.body.addEventListener('focusin', inputDelegate((el) => onFocus(el)));
-    document.body.addEventListener('click', inputDelegate((el) => onFocus(el)));
-    document.body.addEventListener('focusout', inputDelegate((el) =>onFocusOut(el)));
-    ['pointerdown', 'mousedown', 'pointerup', 'mouseup', 'click'].forEach(key => {
+    document.body.addEventListener('click', inputDelegate((el) => {onFocus(el); console.log("click")}));
+    document.body.addEventListener('mousedown', e => {isMouseDown = true; console.log("onMouseDownHandler"); console.log(e.type)});
+    document.body.addEventListener('focusout', inputDelegate((el) => {onFocusOut(); console.log("focusout")}));
+    document.body.addEventListener('mouseup', e => {onMouseUp(); console.log(e.type)});
+    document.body.addEventListener('focusin', inputDelegate((el) => {onFocus(el); console.log("focusin")}));
+    ['input', 'pointerdown', 'mousedown', 'pointerup', 'mouseup', 'selectstart', 'click'].forEach(key => {
         window.addEventListener(key, event => {
             if(isChildElement(event.target, keyboardElement)) {
                 event.preventDefault()
             }
         }, true);
+    });
+
+    Object.keys(window).forEach(key => {
+        if (/^on/.test(key)) {
+            window.addEventListener(key.slice(2), event => {
+                //console.log(event.type);
+            });
+        }
     });
 
     keyboard = new Keyboard({
@@ -139,7 +151,7 @@ function onKeyPress(button) {
             inputList[(index + 1) % inputList.length].focus();
             break
         case "{downkeyboard}":
-            showKeyboard(false)
+            hideKeyboard()
             break
         case "{space}":
             button = " "
@@ -176,41 +188,16 @@ function onKeyPressNumeric(button) {
 }
 
 function performNativeKeyPress(element, keyCode) {
-    element.dispatchEvent(new Event("change", { bubbles: true }));
+    element.dispatchEvent(new Event("keydown", { keyCode: keyCode, which: keyCode }));
+    element.dispatchEvent(new Event("keypress", { keyCode: keyCode, which: keyCode }));
     element.dispatchEvent(new Event("input", { bubbles: true }));
-    element.dispatchEvent(
-        new Event("keydown", { keyCode: keyCode, which: keyCode })
-    );
-}
-
-function showKeyboard(show) {
-    const dialogs = document.querySelectorAll('.fixed-full')
-    if(show) {
-        if(keyboardHideTask != null) {
-            clearTimeout(keyboardHideTask)
-            keyboardHideTask = null;
-        }
-        keyboardElement.style = ""
-        let keyboardHeight = keyboardElement.offsetHeight
-        const style = "padding-bottom: " + String(keyboardHeight) + "px !important"
-        document.body.style = style
-        for(let fixed of dialogs) {
-            fixed.style = style
-        }
-    } else {
-        keyboardHideTask = setTimeout(() => {
-            keyboardElement.style = "display: none"
-            document.body.style = ""
-            keyboardHideTask = null;
-            for(const fixed of dialogs) {
-                fixed.style = ""
-            }
-        })
-    }
+    //element.dispatchEvent(new Event("change", { bubbles: true }));
 }
 
 function onFocus(e) {
+    console.log("onFocusHandler")
     inputElement = e.target
+    isFocus = true
     if(e.target.type.toLowerCase() === 'number') {
         keyboard.setOptions({
             layout: numericLayout,
@@ -222,13 +209,56 @@ function onFocus(e) {
             layoutName: "default"
         })
     }
-    showKeyboard(true)
+    showKeyboard()
     inputElement.scrollIntoView({ behavior: 'smooth' });
 }
 
-function onFocusOut(e) {
+function onMouseUp() {
+    console.log("onMouseUpHandler")
+    isMouseDown = false;
+    if(isFocus) {
+        return
+    }
+    hideKeyboard()
+}
+
+function onFocusOut() {
+    console.log("onFocusOutHandler")
+    isFocus = false
+    if(isMouseDown) {
+        return
+    }
+    hideKeyboard()
+}
+
+function showKeyboard() {
+    const dialogs = document.querySelectorAll('.fixed-full')
+    if(keyboardHideTask != null) {
+        clearTimeout(keyboardHideTask)
+        keyboardHideTask = null;
+    }
+    keyboardElement.style = ""
+    let keyboardHeight = keyboardElement.offsetHeight
+    const style = "padding-bottom: " + String(keyboardHeight) + "px !important"
+    document.body.style = style
+    for(let fixed of dialogs) {
+        fixed.style = style
+    }
+}
+
+function hideKeyboard() {
     inputElement = null
-    showKeyboard(false)
+    isFocus = false
+    isMouseDown = false
+    keyboardHideTask = setTimeout(() => {
+        const dialogs = document.querySelectorAll('.fixed-full')
+        keyboardElement.style = "display: none"
+        document.body.style = ""
+        keyboardHideTask = null;
+        for(const fixed of dialogs) {
+            fixed.style = ""
+        }
+    })
 }
 
 function handleShiftPress() {
