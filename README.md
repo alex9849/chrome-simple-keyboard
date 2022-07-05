@@ -1,15 +1,9 @@
-# <img src="public/icons/icon_48.png" width="45" align="left"> Chrome Simple Keyboard
+## Chrome Simple Keyboard
 
-My Chrome Extension
+This is a virtual keyboard extension for chromium based browsers.
+The extension uses native keyboard events and is therefore compatible with modern JavaScript frameworks such as Vue.Js.
 
-## Features
-
-- Feature 1
-- Feature 2
-
-## Install
-
-[**Chrome** extension]() <!-- TODO: Add chrome extension link inside parenthesis -->
+The extension is based on [simple-keyboard](https://github.com/hodgef/simple-keyboard).
 
 ## Contribution
 
