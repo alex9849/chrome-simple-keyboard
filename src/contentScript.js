@@ -38,7 +38,6 @@ function setup() {
     let styleElement = document.createElement('link')
     styleElement.rel = 'stylesheet'
     styleElement.href = chrome.runtime.getURL('contentScript.css')
-    console.log(styleElement.href)
     document.head.appendChild(styleElement);
 
     keyboardElement = document.createElement('div')
@@ -51,11 +50,11 @@ function setup() {
 
     const delegate = (selector) => (cb) => (e) => e.target.matches(selector) && cb(e);
     const inputDelegate = delegate(querySelector);
-    document.body.addEventListener('click', inputDelegate((el) => {onFocus(el); console.log("click")}));
-    document.body.addEventListener('mousedown', e => {isMouseDown = true; console.log("onMouseDownHandler"); console.log(e.type)});
-    document.body.addEventListener('focusout', inputDelegate((el) => {onFocusOut(); console.log("focusout")}));
-    document.body.addEventListener('mouseup', e => {onMouseUp(); console.log(e.type)});
-    document.body.addEventListener('focusin', inputDelegate((el) => {onFocus(el); console.log("focusin")}));
+    document.body.addEventListener('click', inputDelegate((el) => onFocus(el)));
+    document.body.addEventListener('mousedown', e => isMouseDown = true);
+    document.body.addEventListener('focusout', inputDelegate((el) => onFocusOut()));
+    document.body.addEventListener('mouseup', e => onMouseUp());
+    document.body.addEventListener('focusin', inputDelegate((el) => onFocus(el)));
     ['input', 'pointerdown', 'mousedown', 'pointerup', 'mouseup', 'selectstart', 'click'].forEach(key => {
         window.addEventListener(key, event => {
             if(isChildElement(event.target, keyboardElement)) {
@@ -85,7 +84,7 @@ function setup() {
             "{enter}": "↵"
         }
     });
-    showKeyboard(false)
+    hideKeyboard()
 }
 
 function isChildElement(child, target) {
@@ -99,7 +98,6 @@ function isChildElement(child, target) {
 }
 
 function onKeyPress(button) {
-    console.log(button)
     if (!inputElement || !button) {
         return;
     }
@@ -145,9 +143,7 @@ function onKeyPress(button) {
             break
         case "{tab}":
             let inputList = Array.from(document.querySelectorAll(querySelector))
-            console.log(inputList)
             let index = inputList.indexOf(inputElement);
-            console.log(index)
             inputList[(index + 1) % inputList.length].focus();
             break
         case "{downkeyboard}":
@@ -195,7 +191,6 @@ function performNativeKeyPress(element, keyCode) {
 }
 
 function onFocus(e) {
-    console.log("onFocusHandler")
     inputElement = e.target
     isFocus = true
     if(e.target.type.toLowerCase() === 'number') {
@@ -219,7 +214,6 @@ function onFocus(e) {
 }
 
 function onMouseUp() {
-    console.log("onMouseUpHandler")
     isMouseDown = false;
     if(isFocus) {
         return
@@ -228,7 +222,6 @@ function onMouseUp() {
 }
 
 function onFocusOut() {
-    console.log("onFocusOutHandler")
     isFocus = false
     if(isMouseDown) {
         return
