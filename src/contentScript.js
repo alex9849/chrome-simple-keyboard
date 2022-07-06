@@ -31,8 +31,16 @@ function setup() {
             default:
                 languageLayout = englishLayout
         }
-        const keyRows = languageLayout.layout.default;
-        keyRows[keyRows.length - 1] += " {downkeyboard}"
+        const keyRowsDefault = languageLayout.layout.default;
+        keyRowsDefault[keyRowsDefault.length - 1] += " {downkeyboard}"
+        const keyRowsShift = languageLayout.layout.shift;
+        keyRowsShift[keyRowsShift.length - 1] += " {downkeyboard}"
+        if(!!keyboard) {
+            //For some reason simple-keyboard only applied the change in the layout if we change something.
+            // just asetting the layout is not enough
+            toggleShiftLayout()
+            toggleShiftLayout()
+        }
     });
 
     let styleElement = document.createElement('link')
