@@ -1,0 +1,51 @@
+name: Release
+
+on:
+  release:
+    types: [created]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+
+    strategy:
+      matrix:
+        node-version: [16.x]
+    
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Use Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v3
+      with:
+        node-version: ${{ matrix.node-version }}
+    - name: Build
+      run: |
+        npm install
+        npm run build
+        cd build && zip -r chrome-simple-keyboard.zip ./* && cd ..
+        mv build/chrome-simple-keyboard.zip chrome-simple-keyboard.zip
+    - name: Archive extension
+      uses: actions/upload-artifact@v2
+      with:
+        name: Extension
+        path: chrome-simple-keyboard.zip
+  deploy-github:
+    runs-on: ubuntu-latest
+    needs: [build]
+    permissions:
+      contents: write
+    steps:
+    - uses: actions/checkout@v2
+    - name: Download extension
+      uses: actions/download-artifact@v2
+      with:
+        name: Extension
+    - name: Github release
+      uses: softprops/action-gh-release@v1
+      with:
+        fail_on_unmatched_files: true
+        files: |
+          chrome-simple-keyboard.zip
