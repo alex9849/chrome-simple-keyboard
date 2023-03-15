@@ -1,6 +1,6 @@
 {
   "name": "chrome-simple-keyboard",
-  "version": "0.1.0",
+  "version": "0.3.0",
   "description": "My Chrome Extension",
   "private": true,
   "scripts": {
@@ -18,7 +18,7 @@
     "webpack-merge": "^5.8.0"
   },
   "dependencies": {
-    "simple-keyboard": "3.4.91",
-    "simple-keyboard-layouts": "^3.1.144"
+    "simple-keyboard": "3.5.0",
+    "simple-keyboard-layouts": "^3.1.290"
   }
 }
