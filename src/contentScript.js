@@ -10,7 +10,7 @@ const numericLayout = {
     default: ["1 2 3", "4 5 6", "7 8 9", "{tab} 0 {bksp} {downkeyboard}"],
 }
 
-const querySelector = 'input[type=text], input[type=url], input[type=number], input[type=password], input[type=search],textarea'
+const querySelector = 'input[type=text], input[type=url], input[type=number], input[type=password], input[type=search], input[type=email], input[type=search], input[type=tel], input[type=url], textarea'
 var keyboard;
 var keyboardElement;
 var inputElement;
