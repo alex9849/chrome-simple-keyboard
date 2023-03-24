@@ -126,9 +126,13 @@ function onKeyPress(button) {
         case "{enter}":
             if(inputElement.tagName.toLowerCase() === "textarea") {
                 button = "\n"
-                inputElement.value = inputElement.value.substr(0, pos) + button + inputElement.value.substr(posEnd);
-                inputElement.selectionStart = pos + 1;
-                inputElement.selectionEnd = pos + 1;
+                if (pos !== null) {
+                    inputElement.value = inputElement.value.substr(0, pos) + button + inputElement.value.substr(posEnd);
+                    inputElement.selectionStart = pos + 1;
+                    inputElement.selectionEnd = pos + 1;
+                } else {
+                    inputElement.value = inputElement.value + button;
+                }
             } else {
                 //document.querySelector('').
                 //console.log(inputElement)
@@ -137,6 +141,12 @@ function onKeyPress(button) {
             performNativeKeyPress(inputElement, 13);
             break
         case "{bksp}":
+            if (pos === null) {
+                inputElement.value = String(inputElement.value).substr(0, inputElement.value.length-1);
+                performNativeKeyPress(inputElement, 8);
+                break;
+            }
+
             if (posEnd === 0) {
                 performNativeKeyPress(inputElement, 8);
                 break;
@@ -161,11 +171,15 @@ function onKeyPress(button) {
             button = " "
         default:
             for(let char of button) {
-                inputElement.value = inputElement.value.substr(0, pos) + char + inputElement.value.substr(posEnd);
-                inputElement.selectionStart = pos + 1;
-                inputElement.selectionEnd = pos + 1;
-                pos = inputElement.selectionStart;
-                posEnd = inputElement.selectionEnd;
+                if (pos === null) {
+                    inputElement.value = inputElement.value + char;
+                } else {
+                    inputElement.value = inputElement.value.substr(0, pos) + char + inputElement.value.substr(posEnd);
+                    inputElement.selectionStart = pos + 1;
+                    inputElement.selectionEnd = pos + 1;
+                    pos = inputElement.selectionStart;
+                    posEnd = inputElement.selectionEnd;
+                }
                 performNativeKeyPress(inputElement, String(char).charCodeAt(0))
             }
             break
