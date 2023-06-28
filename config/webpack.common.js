@@ -1,6 +1,5 @@
 'use strict';
 
-const SizePlugin = require('size-plugin');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 
@@ -21,6 +20,7 @@ const common = {
     all: false,
     errors: true,
     builtAt: true,
+    assets: true,
   },
   module: {
     rules: [
@@ -45,8 +45,6 @@ const common = {
     ],
   },
   plugins: [
-    // Print file sizes
-    new SizePlugin(),
     // Copy static assets from `public` folder to `build` folder
     new CopyWebpackPlugin({
       patterns: [
