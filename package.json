@@ -1,6 +1,6 @@
 {
   "name": "chrome-simple-keyboard",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "description": "My Chrome Extension",
   "private": true,
   "scripts": {
@@ -8,17 +8,16 @@
     "build": "webpack --mode=production --config config/webpack.config.js"
   },
   "devDependencies": {
-    "copy-webpack-plugin": "^6.4.1",
-    "css-loader": "^4.3.0",
+    "copy-webpack-plugin": "^11.0.0",
+    "css-loader": "^6.8.1",
     "file-loader": "^6.2.0",
-    "mini-css-extract-plugin": "^0.10.1",
-    "size-plugin": "^2.0.2",
-    "webpack": "^4.46.0",
-    "webpack-cli": "^3.3.12",
-    "webpack-merge": "^5.8.0"
+    "mini-css-extract-plugin": "^2.7.6",
+    "webpack": "^5.88.0",
+    "webpack-cli": "^5.1.4",
+    "webpack-merge": "^5.9.0"
   },
   "dependencies": {
-    "simple-keyboard": "3.5.0",
-    "simple-keyboard-layouts": "^3.1.290"
+    "simple-keyboard": "^3.6.0",
+    "simple-keyboard-layouts": "^3.2.25"
   }
 }

@@ -13,6 +13,7 @@ const numericLayout = {
 const querySelector = 'input[type=text], input[type=url], input[type=number], input[type=password], input[type=search], input[type=email], input[type=search], input[type=tel], input[type=url], textarea'
 var keyboard;
 var keyboardElement;
+var togglerButton;
 var inputElement;
 var keyboardHideTask = null;
 var languageLayout = englishLayout;
@@ -55,6 +56,13 @@ function setup() {
     let keyboardWrapper = document.createElement('div')
     keyboardWrapper.className = 'keyboard-wrapper simple-keyboard'
     keyboardElement.append(keyboardWrapper)
+
+    togglerButton = document.createElement('div');
+    togglerButton.id = 'keyboard-toggler';
+    togglerButton.className = 'hidden';
+    togglerButton.onmousedown = e => e.preventDefault();
+    togglerButton.onclick = e => toggleKeyboard();
+    document.body.append(togglerButton);
 
     const delegate = (selector) => (cb) => (e) => e.target.matches(selector) && cb(e);
     const inputDelegate = delegate(querySelector);
@@ -226,6 +234,13 @@ function onFocus(e) {
             layoutName: "default"
         })
     }
+
+    if (inputElement.matches(".no-keyboard")) {
+        showKeyboardToggler();
+        return;
+    }
+
+    hideKeyboardToggler();
     showKeyboard()
     const offset = 50;
     const bodyRect = document.body.getBoundingClientRect().top;
@@ -235,12 +250,29 @@ function onFocus(e) {
     window.scrollTo({ top: offsetPosition, behavior: 'smooth' });
 }
 
+function showKeyboardToggler() {
+    togglerButton.classList.remove("hidden");
+}
+
+function hideKeyboardToggler() {
+    togglerButton.classList.add("hidden");
+}
+
+function toggleKeyboard() {
+    if (keyboardElement.style.display === "none") {
+        showKeyboard();
+    } else {
+        hideKeyboard();
+    }
+}
+
 function onMouseUp() {
     isMouseDown = false;
     if(isFocus) {
         return
     }
     hideKeyboard()
+    hideKeyboardToggler();
 }
 
 function onFocusOut() {
@@ -249,6 +281,7 @@ function onFocusOut() {
         return
     }
     hideKeyboard()
+    hideKeyboardToggler()
 }
 
 function showKeyboard() {
