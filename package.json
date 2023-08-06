@@ -1,7 +1,7 @@
 {
   "name": "chrome-simple-keyboard",
-  "version": "0.4.0",
-  "description": "My Chrome Extension",
+  "version": "0.4.5",
+  "description": "A simple keyboard extension that uses native events",
   "private": true,
   "scripts": {
     "watch": "webpack --mode=development --watch --config config/webpack.config.js",
