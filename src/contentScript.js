@@ -10,7 +10,7 @@ const numericLayout = {
     default: ["1 2 3", "4 5 6", "7 8 9", "{tab} 0 {bksp} {downkeyboard}"],
 }
 
-const querySelector = 'input[type=text], input[type=url], input[type=number], input[type=password], input[type=search], input[type=email], input[type=search], input[type=tel], input[type=url], textarea'
+const querySelector = 'input:not([readonly]), textarea:not([readonly])'
 var keyboard;
 var keyboardElement;
 var togglerButton;
@@ -52,6 +52,7 @@ function setup() {
     keyboardElement = document.createElement('div')
     keyboardElement.id = "virtual-keyboard"
     keyboardElement.onmousedown = e => e.preventDefault()
+    keyboardElement.ontouchstart = e => e.preventDefault()
     document.body.append(keyboardElement)
     let keyboardWrapper = document.createElement('div')
     keyboardWrapper.className = 'keyboard-wrapper simple-keyboard'
@@ -61,6 +62,7 @@ function setup() {
     togglerButton.id = 'keyboard-toggler';
     togglerButton.className = 'hidden';
     togglerButton.onmousedown = e => e.preventDefault();
+    togglerButton.ontouchstart = e => e.preventDefault()
     togglerButton.onclick = e => toggleKeyboard();
     document.body.append(togglerButton);
 
@@ -89,6 +91,7 @@ function setup() {
 
     keyboard = new Keyboard({
         onKeyPress: button => onKeyPress(button),
+        onKeyReleased: button => onKeyRelease(button),
         ...languageLayout,
         display: {
             "{tab}": "↹",
@@ -111,6 +114,14 @@ function isChildElement(child, target) {
         return isChildElement(child.parentElement, target)
     }
     return false
+}
+
+function onKeyRelease(button) {
+    switch (button) {
+        case "{downkeyboard}":
+            hideKeyboard()
+            break
+    }
 }
 
 function onKeyPress(button) {
@@ -173,7 +184,6 @@ function onKeyPress(button) {
             inputList[(index + 1) % inputList.length].focus();
             break
         case "{downkeyboard}":
-            hideKeyboard()
             break
         case "{space}":
             button = " "
