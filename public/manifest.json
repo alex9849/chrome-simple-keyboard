@@ -1,6 +1,6 @@
 {
   "manifest_version": 3,
-  "name": "Chrome Simple Keyboard - A native virtual keyboard",
+  "name": "Chrome Simple Keyboard - A virtual keyboard",
   "version": "0.4.3",
   "description": "A native virtual keyboard based on the simple-keyboard package",
   "icons": {
