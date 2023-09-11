@@ -18,8 +18,6 @@ var inputElement;
 var keyboardHideTask = null;
 var languageLayout = englishLayout;
 var shiftPressed = false;
-var isMouseDown = false;
-var isFocus = false;
 
 function setup() {
     chrome.storage.sync.get({
@@ -66,13 +64,6 @@ function setup() {
     togglerButton.onclick = e => toggleKeyboard();
     document.body.append(togglerButton);
 
-    const delegate = (selector) => (cb) => (e) => e.target.matches(selector) && cb(e);
-    const inputDelegate = delegate(querySelector);
-    document.body.addEventListener('click', inputDelegate((el) => onFocus(el)));
-    document.body.addEventListener('mousedown', e => isMouseDown = true);
-    document.body.addEventListener('focusout', inputDelegate((el) => onFocusOut()));
-    document.body.addEventListener('mouseup', e => onMouseUp());
-    document.body.addEventListener('focusin', inputDelegate((el) => onFocus(el)));
     ['input', 'pointerdown', 'mousedown', 'pointerup', 'mouseup', 'selectstart', 'click'].forEach(key => {
         window.addEventListener(key, event => {
             if(isChildElement(event.target, keyboardElement)) {
@@ -103,6 +94,9 @@ function setup() {
             "{enter}": "↵"
         }
     });
+    setInterval(() => {
+        checkKeyboard();
+    }, 200);
     hideKeyboard()
 }
 
@@ -119,7 +113,7 @@ function isChildElement(child, target) {
 function onKeyRelease(button) {
     switch (button) {
         case "{downkeyboard}":
-            hideKeyboard()
+            onFocusOut()
             break
     }
 }
@@ -230,10 +224,9 @@ function performNativeKeyPress(element, keyCode) {
     //element.dispatchEvent(new Event("change", { bubbles: true }));
 }
 
-function onFocus(e) {
-    inputElement = e.target
-    isFocus = true
-    if(e.target.type.toLowerCase() === 'number') {
+function onFocus(target) {
+    inputElement = target
+    if(target.type.toLowerCase() === 'number') {
         keyboard.setOptions({
             layout: numericLayout,
             layoutName: "default"
@@ -276,19 +269,10 @@ function toggleKeyboard() {
     }
 }
 
-function onMouseUp() {
-    isMouseDown = false;
-    if(isFocus) {
-        return
-    }
-    hideKeyboard()
-    hideKeyboardToggler();
-}
-
 function onFocusOut() {
-    isFocus = false
-    if(isMouseDown) {
-        return
+    if(inputElement) {
+        inputElement.blur()
+        inputElement = null
     }
     hideKeyboard()
     hideKeyboardToggler()
@@ -309,10 +293,23 @@ function showKeyboard() {
     }
 }
 
+function checkKeyboard() {
+    if(document.activeElement.matches(querySelector)) {
+        if (inputElement === document.activeElement) {
+            return
+        }
+        onFocus(document.activeElement)
+    } else {
+        if (inputElement === null) {
+            return;
+        }
+        onFocusOut()
+    }
+}
+
 function hideKeyboard() {
-    inputElement = null
-    isFocus = false
-    isMouseDown = false
+    console.log("Hide keyboard")
+
     keyboardHideTask = setTimeout(() => {
         const dialogs = document.querySelectorAll('.fixed-full')
         keyboardElement.style = "display: none"
