@@ -72,14 +72,6 @@ function setup() {
         }, true);
     });
 
-    Object.keys(window).forEach(key => {
-        if (/^on/.test(key)) {
-            window.addEventListener(key.slice(2), event => {
-                //console.log(event.type);
-            });
-        }
-    });
-
     keyboard = new Keyboard({
         onKeyPress: button => onKeyPress(button),
         onKeyReleased: button => onKeyRelease(button),
@@ -308,8 +300,6 @@ function checkKeyboard() {
 }
 
 function hideKeyboard() {
-    console.log("Hide keyboard")
-
     keyboardHideTask = setTimeout(() => {
         const dialogs = document.querySelectorAll('.fixed-full')
         keyboardElement.style = "display: none"
