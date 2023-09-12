@@ -18,6 +18,7 @@ var inputElement;
 var keyboardHideTask = null;
 var languageLayout = englishLayout;
 var shiftPressed = false;
+var isMouseDown = false;
 
 function setup() {
     chrome.storage.sync.get({
@@ -63,6 +64,8 @@ function setup() {
     togglerButton.ontouchstart = e => e.preventDefault()
     togglerButton.onclick = e => toggleKeyboard();
     document.body.append(togglerButton);
+    document.body.addEventListener('mousedown', e => isMouseDown = true);
+    document.body.addEventListener('mouseup', e => onMouseUp());
 
     ['input', 'pointerdown', 'mousedown', 'pointerup', 'mouseup', 'selectstart', 'click'].forEach(key => {
         window.addEventListener(key, event => {
@@ -108,6 +111,15 @@ function onKeyRelease(button) {
             onFocusOut()
             break
     }
+}
+
+function onMouseUp() {
+    isMouseDown = false;
+    if(inputElement) {
+        return
+    }
+    hideKeyboard()
+    hideKeyboardToggler();
 }
 
 function onKeyPress(button) {
@@ -286,6 +298,9 @@ function showKeyboard() {
 }
 
 function checkKeyboard() {
+    if(isMouseDown) {
+        return
+    }
     if(document.activeElement.matches(querySelector)) {
         if (inputElement === document.activeElement) {
             return
