@@ -1,6 +1,6 @@
 {
   "name": "chrome-simple-keyboard",
-  "version": "0.4.6",
+  "version": "0.4.7",
   "description": "A simple keyboard extension that uses native events",
   "private": true,
   "scripts": {
@@ -12,7 +12,7 @@
     "css-loader": "^6.8.1",
     "file-loader": "^6.2.0",
     "mini-css-extract-plugin": "^2.7.6",
-    "webpack": "^5.88.0",
+    "webpack": "5.94.0",
     "webpack-cli": "^5.1.4",
     "webpack-merge": "^5.9.0"
   },
