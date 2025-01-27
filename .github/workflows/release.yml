@@ -15,7 +15,7 @@ jobs:
         node-version: [16.x]
     
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
 
     - name: Use Node.js ${{ matrix.node-version }}
       uses: actions/setup-node@v3
@@ -28,7 +28,7 @@ jobs:
         cd build && zip -r chrome-simple-keyboard.zip ./* && cd ..
         mv build/chrome-simple-keyboard.zip chrome-simple-keyboard.zip
     - name: Archive extension
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v4
       with:
         name: Extension
         path: chrome-simple-keyboard.zip
@@ -38,11 +38,12 @@ jobs:
     permissions:
       contents: write
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v4
     - name: Download extension
-      uses: actions/download-artifact@v2
+      uses: actions/download-artifact@v4
       with:
         name: Extension
+        path: chrome-simple-keyboard.zip
     - name: Github release
       uses: softprops/action-gh-release@v1
       with:
