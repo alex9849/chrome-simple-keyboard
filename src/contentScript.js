@@ -3,8 +3,14 @@
 import Keyboard from 'simple-keyboard';
 import './contentScript.css';
 import germanLayout from "simple-keyboard-layouts/build/layouts/german";
-import englishLayout from "simple-keyboard-layouts/build/layouts/english"
+import englishLayout from "simple-keyboard-layouts/build/layouts/english";
+import frenchLayout from "simple-keyboard-layouts/build/layouts/french";
 
+const languageLayouts = {
+    'english': englishLayout,
+    'german': germanLayout,
+    'french': frenchLayout,
+}
 
 const numericLayout = {
     default: ["1 2 3", "4 5 6", "7 8 9", "{tab} 0 {bksp} {downkeyboard}"],
@@ -24,13 +30,7 @@ function setup() {
     chrome.storage.sync.get({
         language: 'english',
     }, function(items) {
-        switch (items.language) {
-            case 'german':
-                languageLayout = germanLayout
-                break
-            default:
-                languageLayout = englishLayout
-        }
+        languageLayout = languageLayouts[items.language]
         const keyRowsDefault = languageLayout.layout.default;
         keyRowsDefault[keyRowsDefault.length - 1] += " {downkeyboard}"
         const keyRowsShift = languageLayout.layout.shift;
