@@ -3,6 +3,7 @@
   "version": "0.4.7",
   "description": "A simple keyboard extension that uses native events",
   "private": true,
+  "license": "MIT",
   "scripts": {
     "watch": "webpack --mode=development --watch --config config/webpack.config.js",
     "build": "webpack --mode=production --config config/webpack.config.js"
