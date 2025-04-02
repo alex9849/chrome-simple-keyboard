@@ -5,11 +5,13 @@ import './contentScript.css';
 import germanLayout from "simple-keyboard-layouts/build/layouts/german";
 import englishLayout from "simple-keyboard-layouts/build/layouts/english";
 import frenchLayout from "simple-keyboard-layouts/build/layouts/french";
+import czechLayout from "simple-keyboard-layouts/build/layouts/czech";
 
 const languageLayouts = {
     'english': englishLayout,
     'german': germanLayout,
     'french': frenchLayout,
+    'czech': czechLayout,
 }
 
 const numericLayout = {
