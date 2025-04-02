@@ -19,6 +19,6 @@
   },
   "dependencies": {
     "simple-keyboard": "^3.6.0",
-    "simple-keyboard-layouts": "^3.2.25"
+    "simple-keyboard-layouts": "^3.4.73"
   }
 }
