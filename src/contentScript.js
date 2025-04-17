@@ -332,11 +332,16 @@ function onFocus(target) {
 
     hideKeyboardToggler();
     showKeyboard()
-    const offset = 50;
+
+    let keyboardDom = document.getElementById('virtual-keyboard')
+    if (!keyboardDom) {
+        return;
+    }
+    const remainingHeight = window.innerHeight - keyboardDom.offsetHeight
     const bodyRect = document.body.getBoundingClientRect().top;
     const elementRect = inputElement.getBoundingClientRect().top;
     const elementPosition = elementRect - bodyRect;
-    const offsetPosition = elementPosition - offset;
+    const offsetPosition = elementPosition - (remainingHeight / 2);
     window.scrollTo({ top: offsetPosition, behavior: 'smooth' });
 }
 
