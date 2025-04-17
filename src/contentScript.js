@@ -4,6 +4,8 @@ import Keyboard from 'simple-keyboard';
 import './contentScript.css';
 import arabic from "simple-keyboard-layouts/build/layouts/arabic";
 import assamese from "simple-keyboard-layouts/build/layouts/assamese";
+import armenianEastern from "simple-keyboard-layouts/build/layouts/armenianEastern";
+import armenianWestern from "simple-keyboard-layouts/build/layouts/armenianWestern";
 import balochi from "simple-keyboard-layouts/build/layouts/balochi";
 import belarusian from "simple-keyboard-layouts/build/layouts/belarusian";
 import bengali from "simple-keyboard-layouts/build/layouts/bengali";
@@ -26,6 +28,7 @@ import japanese from "simple-keyboard-layouts/build/layouts/japanese";
 import kannada from "simple-keyboard-layouts/build/layouts/kannada";
 import korean from "simple-keyboard-layouts/build/layouts/korean";
 import kurdish from "simple-keyboard-layouts/build/layouts/kurdish";
+import macedonian from "simple-keyboard-layouts/build/layouts/macedonian";
 import malayalam from "simple-keyboard-layouts/build/layouts/malayalam";
 import nigerian from "simple-keyboard-layouts/build/layouts/nigerian";
 import nko from "simple-keyboard-layouts/build/layouts/nko";
@@ -49,6 +52,8 @@ import uyghur from "simple-keyboard-layouts/build/layouts/uyghur";
 const languageLayouts = {
     arabic,
     assamese,
+    armenianEastern,
+    armenianWestern,
     balochi,
     belarusian,
     bengali,
@@ -71,6 +76,7 @@ const languageLayouts = {
     kannada,
     korean,
     kurdish,
+    macedonian,
     malayalam,
     nigerian,
     nko,

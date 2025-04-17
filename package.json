@@ -18,7 +18,7 @@
     "webpack-merge": "^5.9.0"
   },
   "dependencies": {
-    "simple-keyboard": "^3.6.0",
-    "simple-keyboard-layouts": "^3.2.25"
+    "simple-keyboard": "^3.8.49",
+    "simple-keyboard-layouts": "^3.4.79"
   }
 }

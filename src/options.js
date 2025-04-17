@@ -18,11 +18,11 @@ function save_options() {
 // stored in chrome.storage.
 function restore_options() {
     const languages = [
-        "arabic", "assamese", "balochi", "belarusian", "bengali", "brazilian", "burmese", "chinese", "czech",
-        "english", "farsi", "french", "georgian", "german", "gilaki", "greek", "hebrew", "hindi", "hungarian",
-        "italian", "japanese", "kannada", "korean", "kurdish", "malayalam", "nigerian", "nko", "norwegian",
-        "odia", "polish", "punjabi", "russian", "russianOld", "sindhi", "spanish", "swedish", "telugu",
-        "thai", "turkish", "ukrainian", "urdu", "urduStandard", "uyghur"
+        "arabic", "assamese", "armenianEastern", "armenianWestern", "balochi", "belarusian", "bengali", "brazilian",
+        "burmese", "chinese", "czech", "english", "farsi", "french", "georgian", "german", "gilaki", "greek", "hebrew",
+        "hindi", "hungarian", "italian", "japanese", "kannada", "korean", "kurdish", "macedonian", "malayalam",
+        "nigerian", "nko", "norwegian", "odia", "polish", "punjabi", "russian", "russianOld", "sindhi", "spanish",
+        "swedish", "telugu", "thai", "turkish", "ukrainian", "urdu", "urduStandard", "uyghur"
     ]
     const languageNode = document.getElementById('language')
     for(const language of languages) {
