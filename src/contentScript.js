@@ -316,6 +316,9 @@ function performNativeKeyPress(element, keyCode) {
 
 function onFocus(target) {
     inputElement = target
+    if(['checkbox', 'radio', 'button', 'color', 'image', 'file', 'hidden'].includes(target.type.toLowerCase())) {
+        return;
+    }
     if(target.type.toLowerCase() === 'number') {
         keyboard.setOptions({
             layout: numericLayout,
