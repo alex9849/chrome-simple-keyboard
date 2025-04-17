@@ -93,6 +93,10 @@
     height: 85px
 }
 
+.hg-downkeyboard-standard {
+    max-width: 100px;
+}
+
 .hg-theme-default .hg-button.hg-button-numpad0 {
     width: 105px
 }

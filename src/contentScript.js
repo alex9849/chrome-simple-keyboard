@@ -327,7 +327,13 @@ function onFocus(target) {
     } else {
         keyboard.setOptions({
             ...languageLayout,
-            layoutName: "default"
+            layoutName: "default",
+            buttonTheme: [
+                {
+                    class: "hg-downkeyboard-standard",
+                    buttons: "{downkeyboard}"
+                }
+            ]
         })
     }
 
