@@ -2,18 +2,98 @@
 
 import Keyboard from 'simple-keyboard';
 import './contentScript.css';
-import germanLayout from "simple-keyboard-layouts/build/layouts/german";
-import englishLayout from "simple-keyboard-layouts/build/layouts/english";
-import frenchLayout from "simple-keyboard-layouts/build/layouts/french";
+import arabic from "simple-keyboard-layouts/build/layouts/arabic";
+import assamese from "simple-keyboard-layouts/build/layouts/assamese";
+import balochi from "simple-keyboard-layouts/build/layouts/balochi";
+import belarusian from "simple-keyboard-layouts/build/layouts/belarusian";
+import bengali from "simple-keyboard-layouts/build/layouts/bengali";
+import brazilian from "simple-keyboard-layouts/build/layouts/brazilian";
+import burmese from "simple-keyboard-layouts/build/layouts/burmese";
+import chinese from "simple-keyboard-layouts/build/layouts/chinese";
+import czech from "simple-keyboard-layouts/build/layouts/czech";
+import english from "simple-keyboard-layouts/build/layouts/english";
+import farsi from "simple-keyboard-layouts/build/layouts/farsi";
+import french from "simple-keyboard-layouts/build/layouts/french";
+import georgian from "simple-keyboard-layouts/build/layouts/georgian";
+import german from "simple-keyboard-layouts/build/layouts/german";
+import gilaki from "simple-keyboard-layouts/build/layouts/gilaki";
+import greek from "simple-keyboard-layouts/build/layouts/greek";
+import hebrew from "simple-keyboard-layouts/build/layouts/hebrew";
+import hindi from "simple-keyboard-layouts/build/layouts/hindi";
+import hungarian from "simple-keyboard-layouts/build/layouts/hungarian";
+import italian from "simple-keyboard-layouts/build/layouts/italian";
+import japanese from "simple-keyboard-layouts/build/layouts/japanese";
+import kannada from "simple-keyboard-layouts/build/layouts/kannada";
+import korean from "simple-keyboard-layouts/build/layouts/korean";
+import kurdish from "simple-keyboard-layouts/build/layouts/kurdish";
+import malayalam from "simple-keyboard-layouts/build/layouts/malayalam";
+import nigerian from "simple-keyboard-layouts/build/layouts/nigerian";
+import nko from "simple-keyboard-layouts/build/layouts/nko";
+import norwegian from "simple-keyboard-layouts/build/layouts/norwegian";
+import odia from "simple-keyboard-layouts/build/layouts/odia";
+import polish from "simple-keyboard-layouts/build/layouts/polish";
+import punjabi from "simple-keyboard-layouts/build/layouts/punjabi";
+import russian from "simple-keyboard-layouts/build/layouts/russian";
+import russianOld from "simple-keyboard-layouts/build/layouts/russianOld";
+import sindhi from "simple-keyboard-layouts/build/layouts/sindhi";
+import spanish from "simple-keyboard-layouts/build/layouts/spanish";
+import swedish from "simple-keyboard-layouts/build/layouts/swedish";
+import telugu from "simple-keyboard-layouts/build/layouts/telugu";
+import thai from "simple-keyboard-layouts/build/layouts/thai";
+import turkish from "simple-keyboard-layouts/build/layouts/turkish";
+import ukrainian from "simple-keyboard-layouts/build/layouts/ukrainian";
+import urdu from "simple-keyboard-layouts/build/layouts/urdu";
+import urduStandard from "simple-keyboard-layouts/build/layouts/urduStandard";
+import uyghur from "simple-keyboard-layouts/build/layouts/uyghur";
 
 const languageLayouts = {
-    'english': englishLayout,
-    'german': germanLayout,
-    'french': frenchLayout,
+    arabic,
+    assamese,
+    balochi,
+    belarusian,
+    bengali,
+    brazilian,
+    burmese,
+    chinese,
+    czech,
+    english,
+    farsi,
+    french,
+    georgian,
+    german,
+    gilaki,
+    greek,
+    hebrew,
+    hindi,
+    hungarian,
+    italian,
+    japanese,
+    kannada,
+    korean,
+    kurdish,
+    malayalam,
+    nigerian,
+    nko,
+    norwegian,
+    odia,
+    polish,
+    punjabi,
+    russian,
+    russianOld,
+    sindhi,
+    spanish,
+    swedish,
+    telugu,
+    thai,
+    turkish,
+    ukrainian,
+    urdu,
+    urduStandard,
+    uyghur
 }
 
 const numericLayout = {
-    default: ["1 2 3", "4 5 6", "7 8 9", "{tab} 0 {bksp} {downkeyboard}"],
+    default: ["1 2 3 {bksp}", "4 5 6 .", "7 8 9 ,", "{tab} 0  {downkeyboard}"],
 }
 
 const querySelector = 'input:not([readonly]), textarea:not([readonly])'
@@ -22,7 +102,7 @@ var keyboardElement;
 var togglerButton;
 var inputElement;
 var keyboardHideTask = null;
-var languageLayout = englishLayout;
+var languageLayout = english;
 var shiftPressed = false;
 var isMouseDown = false;
 

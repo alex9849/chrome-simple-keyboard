@@ -1,3 +1,4 @@
+
 // Saves options to chrome.storage
 function save_options() {
     var language = document.getElementById('language').value;
@@ -16,11 +17,26 @@ function save_options() {
 // Restores select box and checkbox state using the preferences
 // stored in chrome.storage.
 function restore_options() {
+    const languages = [
+        "arabic", "assamese", "balochi", "belarusian", "bengali", "brazilian", "burmese", "chinese", "czech",
+        "english", "farsi", "french", "georgian", "german", "gilaki", "greek", "hebrew", "hindi", "hungarian",
+        "italian", "japanese", "kannada", "korean", "kurdish", "malayalam", "nigerian", "nko", "norwegian",
+        "odia", "polish", "punjabi", "russian", "russianOld", "sindhi", "spanish", "swedish", "telugu",
+        "thai", "turkish", "ukrainian", "urdu", "urduStandard", "uyghur"
+    ]
+    const languageNode = document.getElementById('language')
+    for(const language of languages) {
+        const option = document.createElement("option");
+        option.value = language
+        option.text = language
+        languageNode.appendChild(option)
+    }
+
     // Use default value color = 'red' and likesColor = true.
     chrome.storage.sync.get({
         language: 'english',
     }, function(items) {
-        document.getElementById('language').value = items.language;
+        languageNode.value = items.language;
     });
 }
 document.addEventListener('DOMContentLoaded', restore_options);
