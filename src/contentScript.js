@@ -107,6 +107,7 @@ var keyboard;
 var keyboardElement;
 var togglerButton;
 var inputElement;
+var inputElementNumeric = false
 var keyboardHideTask = null;
 var languageLayout = english;
 var shiftPressed = false;
@@ -214,7 +215,7 @@ function onKeyPress(button) {
     }
     var pos = inputElement.selectionStart;
     var posEnd = inputElement.selectionEnd;
-    if (inputElement.type.toLowerCase() === 'number' && button !== "{tab}" && button !== "{downkeyboard}") {
+    if (inputElementNumeric && button !== "{tab}" && button !== "{downkeyboard}") {
         onKeyPressNumeric(button)
         return;
     }
@@ -293,7 +294,7 @@ function onKeyPress(button) {
 }
 
 function onKeyPressNumeric(button) {
-    if(![0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 0, '{bksp}'].some(x => String(x) === button)) {
+    if(![0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 0, '{bksp}', ',', '.'].some(x => String(x) === button)) {
         return
     }
     if(button === "{bksp}") {
@@ -302,7 +303,10 @@ function onKeyPressNumeric(button) {
             inputElement.value = strValue.substring(0, strValue.length - 1)
         }
     } else {
-        inputElement.value = String(inputElement.value) + button
+        if (button == ',') {
+            button = '.'
+        }
+        inputElement.value = String(inputElement.value) + String(button)
     }
     performNativeKeyPress(inputElement, String(button).charCodeAt(0))
 }
@@ -315,6 +319,12 @@ function performNativeKeyPress(element, keyCode) {
 }
 
 function onFocus(target) {
+    if (target.matches(".no-keyboard-no-toggler")) {
+        hideKeyboardToggler();
+        onFocusOut()
+        return;
+    }
+    onFocusOut()
     inputElement = target
     if(['checkbox', 'radio', 'button', 'color', 'image', 'file', 'hidden'].includes(target.type.toLowerCase())) {
         return;
@@ -322,8 +332,14 @@ function onFocus(target) {
     if(target.type.toLowerCase() === 'number') {
         keyboard.setOptions({
             layout: numericLayout,
-            layoutName: "default"
+            layoutName: "default",
+            buttonTheme: []
         })
+        inputElementNumeric = true
+        inputElement.type="text"
+        if(inputElement.value) {
+            inputElement.selectionStart = inputElement.value.length
+        }
     } else {
         keyboard.setOptions({
             ...languageLayout,
@@ -337,10 +353,7 @@ function onFocus(target) {
         })
     }
 
-    if (inputElement.matches(".no-keyboard-no-toggler")) {
-        hideKeyboardToggler();
-        return;
-    } else if (inputElement.matches(".no-keyboard")) {
+    if (inputElement.matches(".no-keyboard")) {
         showKeyboardToggler();
         return;
     }
@@ -378,6 +391,14 @@ function toggleKeyboard() {
 
 function onFocusOut() {
     if(inputElement) {
+        if(inputElementNumeric) {
+            if (inputElement.value && inputElement.value.charAt(inputElement.value.length - 1) === '.') {
+                inputElement.value = inputElement.value.substring(0, inputElement.value.length - 1)
+                performNativeKeyPress(inputElement, String('.').charCodeAt(0))
+            }
+            inputElement.type="number"
+            inputElementNumeric = false
+        }
         inputElement.blur()
         inputElement = null
     }
