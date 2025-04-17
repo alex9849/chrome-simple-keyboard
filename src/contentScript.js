@@ -322,7 +322,10 @@ function onFocus(target) {
         })
     }
 
-    if (inputElement.matches(".no-keyboard")) {
+    if (inputElement.matches(".no-keyboard-no-toggler")) {
+        hideKeyboardToggler();
+        return;
+    } else if (inputElement.matches(".no-keyboard")) {
         showKeyboardToggler();
         return;
     }
