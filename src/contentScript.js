@@ -215,7 +215,7 @@ function onKeyPress(button) {
     }
     var pos = inputElement.selectionStart;
     var posEnd = inputElement.selectionEnd;
-    if (inputElementNumeric && button !== "{tab}" && button !== "{downkeyboard}") {
+    if (inputElementNumeric && button !== "{downkeyboard}") {
         onKeyPressNumeric(button)
         return;
     }
@@ -231,7 +231,7 @@ function onKeyPress(button) {
             if(inputElement.tagName.toLowerCase() === "textarea") {
                 button = "\n"
                 if (pos !== null) {
-                    inputElement.value = inputElement.value.substr(0, pos) + button + inputElement.value.substr(posEnd);
+                    inputElement.value = inputElement.value.substring(0, pos) + button + inputElement.value.substring(posEnd);
                     inputElement.selectionStart = pos + 1;
                     inputElement.selectionEnd = pos + 1;
                 } else {
@@ -246,7 +246,7 @@ function onKeyPress(button) {
             break
         case "{bksp}":
             if (pos === null) {
-                inputElement.value = String(inputElement.value).substr(0, inputElement.value.length-1);
+                inputElement.value = String(inputElement.value).substring(0, inputElement.value.length-1);
                 performNativeKeyPress(inputElement, 8);
                 break;
             }
@@ -258,15 +258,13 @@ function onKeyPress(button) {
             if (posEnd === pos) {
                 pos = pos - 1;
             }
-            inputElement.value = String(inputElement.value).substr(0, pos) + String(inputElement.value).substr(posEnd);
+            inputElement.value = String(inputElement.value).substring(0, pos) + String(inputElement.value).substring(posEnd);
             inputElement.selectionStart = pos;
             inputElement.selectionEnd = pos;
             performNativeKeyPress(inputElement, 8);
             break
         case "{tab}":
-            let inputList = Array.from(document.querySelectorAll(querySelector))
-            let index = inputList.indexOf(inputElement);
-            inputList[(index + 1) % inputList.length].focus();
+            simulateTab(!shiftPressed)
             break
         case "{downkeyboard}":
             break
@@ -277,7 +275,7 @@ function onKeyPress(button) {
                 if (pos === null) {
                     inputElement.value = inputElement.value + char;
                 } else {
-                    inputElement.value = inputElement.value.substr(0, pos) + char + inputElement.value.substr(posEnd);
+                    inputElement.value = inputElement.value.substring(0, pos) + char + inputElement.value.substring(posEnd);
                     inputElement.selectionStart = pos + 1;
                     inputElement.selectionEnd = pos + 1;
                     pos = inputElement.selectionStart;
@@ -294,22 +292,28 @@ function onKeyPress(button) {
 }
 
 function onKeyPressNumeric(button) {
-    if(![0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 0, '{bksp}', ',', '.'].some(x => String(x) === button)) {
+    if(![0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 0, '{bksp}', ',', '.', '{tab}'].some(x => String(x) === button)) {
         return
     }
-    if(button === "{bksp}") {
-        const strValue = String(inputElement.value)
-        if(strValue.length > 0) {
-            inputElement.value = strValue.substring(0, strValue.length - 1)
-        }
-    } else {
-        if (button === ',') {
-            button = '.'
-        }
-        if (button === '.' && inputElement.value.includes('.')) {
+    switch (button) {
+        case "{tab}":
+            simulateTab(true)
             return;
-        }
-        inputElement.value = String(inputElement.value) + String(button)
+        case "{bksp}":
+            const strValue = String(inputElement.value)
+            if(strValue.length > 0) {
+                inputElement.value = strValue.substring(0, strValue.length - 1)
+            }
+            break
+        default:
+            if (button === ',') {
+                button = '.'
+            }
+            if (button === '.' && inputElement.value.includes('.')) {
+                return;
+            }
+            inputElement.value = String(inputElement.value) + String(button)
+            break
     }
     performNativeKeyPress(inputElement, String(button).charCodeAt(0))
 }
@@ -390,6 +394,24 @@ function toggleKeyboard() {
     } else {
         hideKeyboard();
     }
+}
+
+function simulateTab(forward = true) {
+    const focusable = Array.from(
+        document.querySelectorAll('a[href], button, textarea, input, select, [tabindex]:not([tabindex="-1"])')
+    ).filter(el => !el.disabled && el.tabIndex >= 0 && el.offsetParent !== null);
+
+    const active = document.activeElement;
+    const index = focusable.indexOf(active);
+
+    let nextIndex;
+    if (forward) {
+        nextIndex = (index + 1) % focusable.length;
+    } else {
+        nextIndex = (index - 1 + focusable.length) % focusable.length;
+    }
+
+    focusable[nextIndex].focus();
 }
 
 function onFocusOut() {
