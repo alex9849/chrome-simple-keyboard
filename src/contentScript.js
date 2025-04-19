@@ -182,7 +182,7 @@ function setup() {
         physicalKeyboardHighlightBgColor: "#b6b6b6"
     });
     setInterval(() => {
-        checkKeyboard();
+        autoToggleKeyboard();
     }, 200);
     hideKeyboard()
 }
@@ -273,9 +273,16 @@ function onKeyPress(button) {
         return;
     }
 
-    if (inputElementNumeric && button !== "{downkeyboard}") {
-        onKeyPressNumeric(button)
-        return;
+    if (inputElementNumeric) {
+        if(![0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 0, '{bksp}', ',', '.', '{tab}', '{enter}'].some(x => String(x) === button)) {
+            return
+        }
+        if(button === ',') {
+            button = '.'
+        }
+        if (button === '.' && inputElement.value.includes('.')) {
+            return;
+        }
     }
 
     switch (button) {
@@ -304,37 +311,6 @@ function onKeyPress(button) {
     if (button !== "{shift}") {
         disableShiftPress()
     }
-}
-
-function onKeyPressNumeric(button) {
-    if(![0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 0, '{bksp}', ',', '.', '{tab}', '{enter}'].some(x => String(x) === button)) {
-        return
-    }
-    // noinspection FallThroughInSwitchStatementJS
-    switch (button) {
-        case "{tab}":
-            handleTab(true)
-            return;
-        case "{enter}":
-            handleEnter()
-            return;
-        case "{bksp}":
-            const strValue = String(inputElement.value)
-            if(strValue.length > 0) {
-                inputElement.value = strValue.substring(0, strValue.length - 1)
-            }
-            break
-        case ".":
-        case ",":
-            button = '.'
-            if (inputElement.value.includes('.')) {
-                return;
-            }
-        default:
-            inputElement.value = String(inputElement.value) + String(button)
-            break
-    }
-    performNativeKeyPress(inputElement, String(button).charCodeAt(0))
 }
 
 function onFocus(target) {
@@ -495,7 +471,7 @@ function showKeyboard() {
     }
 }
 
-function checkKeyboard() {
+function autoToggleKeyboard() {
     if(isMouseDown) {
         return
     }
