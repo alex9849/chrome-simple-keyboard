@@ -250,6 +250,10 @@ li.hg-candidate-box-list-item:active {
     transition: all 0.5s ease-in-out;
 }
 
+.vk-button-pressed {
+    background-color: #b1b1b1 !important;
+}
+
 #keyboard-toggler.hidden {
     opacity: 0;
     visibility: hidden;

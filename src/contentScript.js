@@ -2,7 +2,7 @@
 
 import Keyboard from 'simple-keyboard';
 import './contentScript.css';
-import {enterWouldBeHandled, triggerElementAction, isVisible, triggerFormSubmit, performNativeKeyPress, isChildElement} from './utils'
+import {triggerElementAction, isVisible, triggerFormSubmit, performNativeKeyPress, isChildElement} from './utils'
 import arabic from "simple-keyboard-layouts/build/layouts/arabic";
 import assamese from "simple-keyboard-layouts/build/layouts/assamese";
 import armenianEastern from "simple-keyboard-layouts/build/layouts/armenianEastern";
@@ -104,15 +104,16 @@ const numericLayout = {
 }
 
 const querySelector = 'input:not([readonly]), textarea:not([readonly])'
-var keyboard;
-var keyboardElement;
-var togglerButton;
-var inputElement;
-var inputElementNumeric = false
-var keyboardHideTask = null;
-var languageLayout = english;
-var shiftPressed = false;
-var isMouseDown = false;
+let keyboard;
+let keyboardElement;
+let togglerButton;
+let inputElement;
+let inputElementNumeric = false
+let keyboardHideTask = null;
+let languageLayout = english;
+let shiftPressed = false;
+let lockPressed = false;
+let isMouseDown = false;
 
 function setup() {
     chrome.storage.sync.get({
@@ -154,7 +155,7 @@ function setup() {
     document.body.append(togglerButton);
     document.body.addEventListener('mousedown', e => isMouseDown = true);
     document.body.addEventListener('mouseup', e => onMouseUp());
-    document.body.addEventListener('keydown', e => onPhysicalKeyPress(e));
+    document.body.addEventListener('keydown', e => blockNonNumericsEvents(e));
 
     ['input', 'pointerdown', 'mousedown', 'pointerup', 'mouseup', 'selectstart', 'click'].forEach(key => {
         window.addEventListener(key, event => {
@@ -177,7 +178,8 @@ function setup() {
             "{shift}": "⇧",
             "{enter}": "↵"
         },
-        physicalKeyboardHighlight: true
+        physicalKeyboardHighlight: true,
+        physicalKeyboardHighlightBgColor: "#b6b6b6"
     });
     setInterval(() => {
         checkKeyboard();
@@ -189,7 +191,7 @@ function isKeyboardShown() {
     return isVisible(keyboardElement)
 }
 
-function onPhysicalKeyPress(event) {
+function blockNonNumericsEvents(event) {
     if(!event.isTrusted) {
         return event
     }
@@ -224,12 +226,53 @@ function onMouseUp() {
     hideKeyboardToggler();
 }
 
+function handleBackSpace() {
+    let pos = inputElement.selectionStart;
+    let posEnd = inputElement.selectionEnd;
+    if (pos === null) {
+        inputElement.value = String(inputElement.value).substring(0, inputElement.value.length-1);
+        performNativeKeyPress(inputElement, 8);
+        return;
+    }
+
+    if (posEnd === 0) {
+        performNativeKeyPress(inputElement, 8);
+        return;
+    }
+    if (posEnd === pos) {
+        pos = pos - 1;
+    }
+    inputElement.value = String(inputElement.value).substring(0, pos) + String(inputElement.value).substring(posEnd);
+    inputElement.selectionStart = pos;
+    inputElement.selectionEnd = pos;
+    performNativeKeyPress(inputElement, 8);
+}
+
+function handleAddCharacters(chars) {
+    let pos = inputElement.selectionStart;
+    let posEnd = inputElement.selectionEnd;
+    for(let char of chars) {
+        if (pos === null) {
+            inputElement.value = inputElement.value + char;
+        } else {
+            inputElement.value = inputElement.value.substring(0, pos) + char + inputElement.value.substring(posEnd);
+            inputElement.selectionStart = pos + 1;
+            inputElement.selectionEnd = pos + 1;
+            pos = inputElement.selectionStart;
+            posEnd = inputElement.selectionEnd;
+        }
+        performNativeKeyPress(inputElement, String(char).charCodeAt(0))
+    }
+}
+
 function onKeyPress(button) {
     if (!inputElement || !button) {
         return;
     }
-    var pos = inputElement.selectionStart;
-    var posEnd = inputElement.selectionEnd;
+    if (button === '{downkeyboard}') {
+        return;
+    }
+
     if (inputElementNumeric && button !== "{downkeyboard}") {
         onKeyPressNumeric(button)
         return;
@@ -246,44 +289,15 @@ function onKeyPress(button) {
             handleEnter()
             break
         case "{bksp}":
-            if (pos === null) {
-                inputElement.value = String(inputElement.value).substring(0, inputElement.value.length-1);
-                performNativeKeyPress(inputElement, 8);
-                break;
-            }
-
-            if (posEnd === 0) {
-                performNativeKeyPress(inputElement, 8);
-                break;
-            }
-            if (posEnd === pos) {
-                pos = pos - 1;
-            }
-            inputElement.value = String(inputElement.value).substring(0, pos) + String(inputElement.value).substring(posEnd);
-            inputElement.selectionStart = pos;
-            inputElement.selectionEnd = pos;
-            performNativeKeyPress(inputElement, 8);
+            handleBackSpace()
             break
         case "{tab}":
-            simulateTab(!shiftPressed)
-            break
-        case "{downkeyboard}":
+            handleTab(!shiftPressed)
             break
         case "{space}":
             button = " "
         default:
-            for(let char of button) {
-                if (pos === null) {
-                    inputElement.value = inputElement.value + char;
-                } else {
-                    inputElement.value = inputElement.value.substring(0, pos) + char + inputElement.value.substring(posEnd);
-                    inputElement.selectionStart = pos + 1;
-                    inputElement.selectionEnd = pos + 1;
-                    pos = inputElement.selectionStart;
-                    posEnd = inputElement.selectionEnd;
-                }
-                performNativeKeyPress(inputElement, String(char).charCodeAt(0))
-            }
+            handleAddCharacters(button)
             break
     }
 
@@ -299,7 +313,7 @@ function onKeyPressNumeric(button) {
     // noinspection FallThroughInSwitchStatementJS
     switch (button) {
         case "{tab}":
-            simulateTab(true)
+            handleTab(true)
             return;
         case "{enter}":
             handleEnter()
@@ -426,7 +440,7 @@ function handleEnter() {
     triggerElementAction()
 }
 
-function simulateTab(forward = true) {
+function handleTab(forward = true) {
     let focusable = Array.from(
         document.querySelectorAll('textarea, input, [tabindex]:not([tabindex="-1"])')
     ).filter(el => !el.disabled && el.tabIndex >= 0 && el.offsetParent !== null && isVisible(el));
@@ -445,16 +459,20 @@ function simulateTab(forward = true) {
     focusable[nextIndex].focus();
 }
 
+function recoverNumeric() {
+    if(inputElementNumeric) {
+        if (inputElement.value && inputElement.value.charAt(inputElement.value.length - 1) === '.') {
+            inputElement.value = inputElement.value.substring(0, inputElement.value.length - 1)
+            performNativeKeyPress(inputElement, String('.').charCodeAt(0))
+        }
+        inputElement.type="number"
+        inputElementNumeric = false
+    }
+}
+
 function onFocusOut() {
     if(inputElement) {
-        if(inputElementNumeric) {
-            if (inputElement.value && inputElement.value.charAt(inputElement.value.length - 1) === '.') {
-                inputElement.value = inputElement.value.substring(0, inputElement.value.length - 1)
-                performNativeKeyPress(inputElement, String('.').charCodeAt(0))
-            }
-            inputElement.type="number"
-            inputElementNumeric = false
-        }
+        recoverNumeric()
         inputElement.blur()
         inputElement = null
     }
@@ -512,6 +530,7 @@ function handleShiftPress() {
 }
 
 function handleCapsLockPressed() {
+    lockPressed = !lockPressed
     toggleShiftLayout()
 }
 
@@ -524,11 +543,14 @@ function disableShiftPress() {
 }
 
 function toggleShiftLayout() {
-    let currentLayout = keyboard.options.layoutName;
-    let shiftToggle = currentLayout === "default" ? "shift" : "default";
-
+    let shiftToggle = shiftPressed ? "shift" : "default";
     keyboard.setOptions({
         layoutName: shiftToggle
     });
+    if (shiftPressed) {
+        keyboard.addButtonTheme("{shift}", "vk-button-pressed")
+    } else {
+        keyboard.removeButtonTheme("{shift}", "vk-button-pressed")
+    }
 }
 setup()
