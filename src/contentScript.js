@@ -210,9 +210,9 @@ function onPhysicalKeyDown(event) {
     if(!inputElementNumeric && event.key === 'Shift') {
         setShiftPress(true)
     }
-    if(!inputElementNumeric && event.key === 'CapsLock') {
-        setLockPress(event.getModifierState("CapsLock"))
-    }
+    //if(!inputElementNumeric && event.key === 'CapsLock') {
+    //    setLockPress(event.getModifierState("CapsLock"))
+    //}
 
     // Block physical inputs when editing a numeric field
     if (['1', '2', '3', '4', '5', '6', '7', '8', '9', '0', 'Backspace', 'Tab', 'Enter'].includes(event.key)) {
@@ -345,23 +345,11 @@ function onFocus(target) {
         return;
     }
     if(target.type.toLowerCase() === 'number') {
-        keyboard.setOptions({
-            layout: numericLayout,
-            layoutName: "default"
-        })
-        keyboard.removeButtonTheme("{downkeyboard}", "hg-downkeyboard-standard")
         inputElementNumeric = true
         inputElement.type="text"
         if(inputElement.value) {
             inputElement.selectionStart = inputElement.value.length
         }
-    } else {
-        keyboard.setOptions({
-            ...languageLayout,
-            layoutName: "default"
-        })
-        keyboard.addButtonTheme("{downkeyboard}", "hg-downkeyboard-standard")
-        updateShiftLayout()
     }
 
     if (inputElement.matches(".no-keyboard")) {
@@ -369,14 +357,11 @@ function onFocus(target) {
         return;
     }
 
+    updateLayout();
     hideKeyboardToggler();
-    showKeyboard()
+    showKeyboard();
 
-    let keyboardDom = document.getElementById('virtual-keyboard')
-    if (!keyboardDom) {
-        return;
-    }
-    const remainingHeight = window.innerHeight - keyboardDom.offsetHeight
+    const remainingHeight = window.innerHeight - keyboardElement.offsetHeight
     const bodyRect = document.body.getBoundingClientRect().top;
     const elementRect = inputElement.getBoundingClientRect().top;
     const elementPosition = elementRect - bodyRect;
@@ -545,7 +530,25 @@ function isShiftLayoutActive() {
     return (shiftPressed || lockPressed) && !(shiftPressed && lockPressed)
 }
 
+function updateLayout() {
+    if(inputElementNumeric) {
+        keyboard.setOptions({
+            layout: numericLayout,
+            layoutName: "default"
+        })
+        keyboard.removeButtonTheme("{downkeyboard}", "hg-downkeyboard-standard")
+    } else {
+        keyboard.setOptions({
+            ...languageLayout,
+            layoutName: "default"
+        })
+        keyboard.addButtonTheme("{downkeyboard}", "hg-downkeyboard-standard")
+        updateShiftLayout()
+    }
+}
+
 function updateShiftLayout() {
+
     keyboard.setOptions({
         layoutName: isShiftLayoutActive() ? "shift" : "default"
     });
