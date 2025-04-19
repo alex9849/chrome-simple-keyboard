@@ -2,6 +2,7 @@
 
 import Keyboard from 'simple-keyboard';
 import './contentScript.css';
+import {enterWouldBeHandled, triggerElementAction, isVisible, triggerFormSubmit, performNativeKeyPress, isChildElement} from './utils'
 import arabic from "simple-keyboard-layouts/build/layouts/arabic";
 import assamese from "simple-keyboard-layouts/build/layouts/assamese";
 import armenianEastern from "simple-keyboard-layouts/build/layouts/armenianEastern";
@@ -99,7 +100,7 @@ const languageLayouts = {
 }
 
 const numericLayout = {
-    default: ["1 2 3 {bksp}", "4 5 6 {tab}", "7 8 9 .", " 0  {downkeyboard}"],
+    default: ["1 2 3 {bksp}", "4 5 6 {enter}", "7 8 9 .", "{tab} 0  {downkeyboard}"],
 }
 
 const querySelector = 'input:not([readonly]), textarea:not([readonly])'
@@ -182,16 +183,6 @@ function setup() {
     hideKeyboard()
 }
 
-function isChildElement(child, target) {
-    if(target === child) {
-        return true
-    }
-    if(!!child.parentElement) {
-        return isChildElement(child.parentElement, target)
-    }
-    return false
-}
-
 function onKeyRelease(button) {
     switch (button) {
         case "{downkeyboard}":
@@ -228,21 +219,7 @@ function onKeyPress(button) {
             handleCapsLockPressed();
             break
         case "{enter}":
-            if(inputElement.tagName.toLowerCase() === "textarea") {
-                button = "\n"
-                if (pos !== null) {
-                    inputElement.value = inputElement.value.substring(0, pos) + button + inputElement.value.substring(posEnd);
-                    inputElement.selectionStart = pos + 1;
-                    inputElement.selectionEnd = pos + 1;
-                } else {
-                    inputElement.value = inputElement.value + button;
-                }
-            } else {
-                //document.querySelector('').
-                //console.log(inputElement)
-                //inputElement.from.submit()
-            }
-            performNativeKeyPress(inputElement, 13);
+            handleEnter()
             break
         case "{bksp}":
             if (pos === null) {
@@ -292,12 +269,15 @@ function onKeyPress(button) {
 }
 
 function onKeyPressNumeric(button) {
-    if(![0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 0, '{bksp}', ',', '.', '{tab}'].some(x => String(x) === button)) {
+    if(![0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 0, '{bksp}', ',', '.', '{tab}', '{enter}'].some(x => String(x) === button)) {
         return
     }
     switch (button) {
         case "{tab}":
             simulateTab(true)
+            return;
+        case "{enter}":
+            handleEnter()
             return;
         case "{bksp}":
             const strValue = String(inputElement.value)
@@ -316,13 +296,6 @@ function onKeyPressNumeric(button) {
             break
     }
     performNativeKeyPress(inputElement, String(button).charCodeAt(0))
-}
-
-function performNativeKeyPress(element, keyCode) {
-    element.dispatchEvent(new Event("keydown", { keyCode: keyCode, which: keyCode }));
-    element.dispatchEvent(new Event("keypress", { keyCode: keyCode, which: keyCode }));
-    element.dispatchEvent(new Event("input", { bubbles: true }));
-    //element.dispatchEvent(new Event("change", { bubbles: true }));
 }
 
 function onFocus(target) {
@@ -396,14 +369,36 @@ function toggleKeyboard() {
     }
 }
 
-function isVisible(el) {
-    const style = window.getComputedStyle(el);
-    return (
-        !!(el.offsetWidth || el.offsetHeight || el.getClientRects().length) &&
-        style.visibility !== 'hidden' &&
-        style.display !== 'none' &&
-        parseFloat(style.opacity) > 0
-    );
+function enterNewLine() {
+    var pos = inputElement.selectionStart;
+    var posEnd = inputElement.selectionEnd;
+
+    let button = "\n"
+    if (pos !== null) {
+        inputElement.value = inputElement.value.substring(0, pos) + button + inputElement.value.substring(posEnd);
+        inputElement.selectionStart = pos + 1;
+        inputElement.selectionEnd = pos + 1;
+    } else {
+        inputElement.value = inputElement.value + button;
+    }
+    performNativeKeyPress(inputElement, 13);
+}
+
+function handleEnter() {
+    const tag = inputElement.tagName.toLowerCase();
+    if (inputElement.isContentEditable || tag === 'textarea') {
+        if(shiftPressed) {
+            triggerFormSubmit(inputElement)
+            return;
+        }
+        enterNewLine()
+        return
+    }
+    if (tag === 'input') {
+        triggerFormSubmit(inputElement)
+        return
+    }
+    triggerElementAction()
 }
 
 function simulateTab(forward = true) {
