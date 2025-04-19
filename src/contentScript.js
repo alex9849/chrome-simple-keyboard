@@ -106,7 +106,7 @@ const numericLayout = {
 const querySelector = 'input:not([readonly]), textarea:not([readonly])'
 let keyboard;
 let keyboardElement;
-let togglerButton;
+let keyboardTogglerElement;
 let inputElement;
 let inputElementNumeric = false
 let keyboardHideTask = null;
@@ -127,8 +127,8 @@ function setup() {
         if(!!keyboard) {
             //For some reason simple-keyboard only applied the change in the layout if we change something.
             // just asetting the layout is not enough
-            toggleShiftLayout()
-            toggleShiftLayout()
+            updateShiftLayout()
+            updateShiftLayout()
         }
     });
 
@@ -146,13 +146,13 @@ function setup() {
     keyboardWrapper.className = 'keyboard-wrapper simple-keyboard'
     keyboardElement.append(keyboardWrapper)
 
-    togglerButton = document.createElement('div');
-    togglerButton.id = 'keyboard-toggler';
-    togglerButton.className = 'hidden';
-    togglerButton.onmousedown = e => e.preventDefault();
-    togglerButton.ontouchstart = e => e.preventDefault()
-    togglerButton.onclick = e => toggleKeyboard();
-    document.body.append(togglerButton);
+    keyboardTogglerElement = document.createElement('div');
+    keyboardTogglerElement.id = 'keyboard-toggler';
+    keyboardTogglerElement.className = 'hidden';
+    keyboardTogglerElement.onmousedown = e => e.preventDefault();
+    keyboardTogglerElement.ontouchstart = e => e.preventDefault()
+    keyboardTogglerElement.onclick = e => toggleKeyboard();
+    document.body.append(keyboardTogglerElement);
     document.body.addEventListener('mousedown', e => isMouseDown = true);
     document.body.addEventListener('mouseup', e => onMouseUp());
     document.body.addEventListener('keydown', e => blockNonNumericsEvents(e));
@@ -327,9 +327,9 @@ function onFocus(target) {
     if(target.type.toLowerCase() === 'number') {
         keyboard.setOptions({
             layout: numericLayout,
-            layoutName: "default",
-            buttonTheme: []
+            layoutName: "default"
         })
+        keyboard.removeButtonTheme("{downkeyboard}", "hg-downkeyboard-standard")
         inputElementNumeric = true
         inputElement.type="text"
         if(inputElement.value) {
@@ -338,14 +338,10 @@ function onFocus(target) {
     } else {
         keyboard.setOptions({
             ...languageLayout,
-            layoutName: "default",
-            buttonTheme: [
-                {
-                    class: "hg-downkeyboard-standard",
-                    buttons: "{downkeyboard}"
-                }
-            ]
+            layoutName: "default"
         })
+        keyboard.addButtonTheme("{downkeyboard}", "hg-downkeyboard-standard")
+        updateShiftLayout()
     }
 
     if (inputElement.matches(".no-keyboard")) {
@@ -369,11 +365,11 @@ function onFocus(target) {
 }
 
 function showKeyboardToggler() {
-    togglerButton.classList.remove("hidden");
+    keyboardTogglerElement.classList.remove("hidden");
 }
 
 function hideKeyboardToggler() {
-    togglerButton.classList.add("hidden");
+    keyboardTogglerElement.classList.add("hidden");
 }
 
 function toggleKeyboard() {
@@ -385,8 +381,8 @@ function toggleKeyboard() {
 }
 
 function enterNewLine() {
-    var pos = inputElement.selectionStart;
-    var posEnd = inputElement.selectionEnd;
+    let pos = inputElement.selectionStart;
+    let posEnd = inputElement.selectionEnd;
 
     let button = "\n"
     if (pos !== null) {
@@ -435,15 +431,14 @@ function handleTab(forward = true) {
     focusable[nextIndex].focus();
 }
 
-function recoverNumeric() {
-    if(inputElementNumeric) {
-        if (inputElement.value && inputElement.value.charAt(inputElement.value.length - 1) === '.') {
-            inputElement.value = inputElement.value.substring(0, inputElement.value.length - 1)
-            performNativeKeyPress(inputElement, String('.').charCodeAt(0))
-        }
-        inputElement.type="number"
-        inputElementNumeric = false
-    }
+function handleShiftPress() {
+    shiftPressed = !shiftPressed
+    updateShiftLayout()
+}
+
+function handleCapsLockPressed() {
+    lockPressed = !lockPressed
+    updateShiftLayout()
 }
 
 function onFocusOut() {
@@ -454,6 +449,17 @@ function onFocusOut() {
     }
     hideKeyboard()
     hideKeyboardToggler()
+}
+
+function recoverNumeric() {
+    if(inputElementNumeric) {
+        if (inputElement.value && inputElement.value.charAt(inputElement.value.length - 1) === '.') {
+            inputElement.value = inputElement.value.substring(0, inputElement.value.length - 1)
+            performNativeKeyPress(inputElement, String('.').charCodeAt(0))
+        }
+        inputElement.type="number"
+        inputElementNumeric = false
+    }
 }
 
 function showKeyboard() {
@@ -492,7 +498,6 @@ function hideKeyboard() {
     keyboardHideTask = setTimeout(() => {
         const dialogs = document.querySelectorAll('.fixed-full')
         keyboardElement.style = "display: none"
-        document.body.style = ""
         keyboardHideTask = null;
         for(const fixed of dialogs) {
             fixed.style = ""
@@ -500,29 +505,27 @@ function hideKeyboard() {
     })
 }
 
-function handleShiftPress() {
-    shiftPressed = !shiftPressed
-    toggleShiftLayout()
-}
-
-function handleCapsLockPressed() {
-    lockPressed = !lockPressed
-    toggleShiftLayout()
-}
-
 function disableShiftPress() {
     if(!shiftPressed) {
         return
     }
     shiftPressed = false
-    toggleShiftLayout()
+    updateShiftLayout()
 }
 
-function toggleShiftLayout() {
-    let shiftToggle = shiftPressed ? "shift" : "default";
+function isShiftLayoutActive() {
+    return (shiftPressed || lockPressed) && !(shiftPressed && lockPressed)
+}
+
+function updateShiftLayout() {
     keyboard.setOptions({
-        layoutName: shiftToggle
+        layoutName: isShiftLayoutActive() ? "shift" : "default"
     });
+    if (lockPressed) {
+        keyboard.addButtonTheme("{lock}", "vk-button-pressed")
+    } else {
+        keyboard.removeButtonTheme("{lock}", "vk-button-pressed")
+    }
     if (shiftPressed) {
         keyboard.addButtonTheme("{shift}", "vk-button-pressed")
     } else {
