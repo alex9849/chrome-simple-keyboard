@@ -303,8 +303,11 @@ function onKeyPressNumeric(button) {
             inputElement.value = strValue.substring(0, strValue.length - 1)
         }
     } else {
-        if (button == ',') {
+        if (button === ',') {
             button = '.'
+        }
+        if (button === '.' && inputElement.value.includes('.')) {
+            return;
         }
         inputElement.value = String(inputElement.value) + String(button)
     }
