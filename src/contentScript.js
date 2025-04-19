@@ -155,7 +155,8 @@ function setup() {
     document.body.append(keyboardTogglerElement);
     document.body.addEventListener('mousedown', e => isMouseDown = true);
     document.body.addEventListener('mouseup', e => onMouseUp());
-    document.body.addEventListener('keydown', e => blockNonNumericsEvents(e));
+    document.body.addEventListener('keydown', e => onPhysicalKeyDown(e));
+    document.body.addEventListener('keyup', e => onPhysicalKeyUp(e));
 
     ['input', 'pointerdown', 'mousedown', 'pointerup', 'mouseup', 'selectstart', 'click'].forEach(key => {
         window.addEventListener(key, event => {
@@ -191,10 +192,29 @@ function isKeyboardShown() {
     return isVisible(keyboardElement)
 }
 
-function blockNonNumericsEvents(event) {
+function onPhysicalKeyUp(event) {
     if(!event.isTrusted) {
         return event
     }
+    if(!inputElementNumeric && event.key === 'Shift') {
+        setShiftPress(false)
+    }
+    return event
+}
+
+function onPhysicalKeyDown(event) {
+    if(!event.isTrusted) {
+        return event
+    }
+
+    if(!inputElementNumeric && event.key === 'Shift') {
+        setShiftPress(true)
+    }
+    if(!inputElementNumeric && event.key === 'CapsLock') {
+        setLockPress(event.getModifierState("CapsLock"))
+    }
+
+    // Block physical inputs when editing a numeric field
     if (['1', '2', '3', '4', '5', '6', '7', '8', '9', '0', 'Backspace', 'Tab', 'Enter'].includes(event.key)) {
         return event
     }
@@ -309,7 +329,7 @@ function onKeyPress(button) {
     }
 
     if (button !== "{shift}") {
-        disableShiftPress()
+        setShiftPress(false)
     }
 }
 
@@ -505,11 +525,19 @@ function hideKeyboard() {
     })
 }
 
-function disableShiftPress() {
-    if(!shiftPressed) {
+function setLockPress(value) {
+    if(lockPressed === value) {
         return
     }
-    shiftPressed = false
+    lockPressed = value
+    updateShiftLayout()
+}
+
+function setShiftPress(value) {
+    if(shiftPressed === value) {
+        return
+    }
+    shiftPressed = value
     updateShiftLayout()
 }
 
