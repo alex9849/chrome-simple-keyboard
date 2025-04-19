@@ -99,7 +99,7 @@ const languageLayouts = {
 }
 
 const numericLayout = {
-    default: ["1 2 3 {bksp}", "4 5 6 .", "7 8 9 ,", "{tab} 0  {downkeyboard}"],
+    default: ["1 2 3 {bksp}", "4 5 6 {tab}", "7 8 9 .", " 0  {downkeyboard}"],
 }
 
 const querySelector = 'input:not([readonly]), textarea:not([readonly])'
@@ -396,10 +396,21 @@ function toggleKeyboard() {
     }
 }
 
+function isVisible(el) {
+    const style = window.getComputedStyle(el);
+    return (
+        !!(el.offsetWidth || el.offsetHeight || el.getClientRects().length) &&
+        style.visibility !== 'hidden' &&
+        style.display !== 'none' &&
+        parseFloat(style.opacity) > 0
+    );
+}
+
 function simulateTab(forward = true) {
-    const focusable = Array.from(
-        document.querySelectorAll('a[href], button, textarea, input, select, [tabindex]:not([tabindex="-1"])')
-    ).filter(el => !el.disabled && el.tabIndex >= 0 && el.offsetParent !== null);
+    let focusable = Array.from(
+        document.querySelectorAll('textarea, input, [tabindex]:not([tabindex="-1"])')
+    ).filter(el => !el.disabled && el.tabIndex >= 0 && el.offsetParent !== null && isVisible(el));
+    focusable = focusable.filter(el => ['input', 'textarea'].includes(el.tagName.toLowerCase()))
 
     const active = document.activeElement;
     const index = focusable.indexOf(active);
