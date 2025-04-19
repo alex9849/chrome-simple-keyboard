@@ -154,6 +154,7 @@ function setup() {
     document.body.append(togglerButton);
     document.body.addEventListener('mousedown', e => isMouseDown = true);
     document.body.addEventListener('mouseup', e => onMouseUp());
+    document.body.addEventListener('keydown', e => onPhysicalKeyPress(e));
 
     ['input', 'pointerdown', 'mousedown', 'pointerup', 'mouseup', 'selectstart', 'click'].forEach(key => {
         window.addEventListener(key, event => {
@@ -175,12 +176,35 @@ function setup() {
             "{lock}": "⇪",
             "{shift}": "⇧",
             "{enter}": "↵"
-        }
+        },
+        physicalKeyboardHighlight: true
     });
     setInterval(() => {
         checkKeyboard();
     }, 200);
     hideKeyboard()
+}
+
+function isKeyboardShown() {
+    return isVisible(keyboardElement)
+}
+
+function onPhysicalKeyPress(event) {
+    if(!event.isTrusted) {
+        return event
+    }
+    if (['1', '2', '3', '4', '5', '6', '7', '8', '9', '0', 'Backspace', 'Tab', 'Enter'].includes(event.key)) {
+        return event
+    }
+    if (event.key === '.' && !inputElement.value.includes('.')) {
+        return event
+    }
+
+    if(isKeyboardShown() && inputElementNumeric) {
+        event.stopImmediatePropagation()
+        event.preventDefault();
+    }
+    return event
 }
 
 function onKeyRelease(button) {
@@ -272,6 +296,7 @@ function onKeyPressNumeric(button) {
     if(![0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 0, '{bksp}', ',', '.', '{tab}', '{enter}'].some(x => String(x) === button)) {
         return
     }
+    // noinspection FallThroughInSwitchStatementJS
     switch (button) {
         case "{tab}":
             simulateTab(true)
@@ -285,13 +310,13 @@ function onKeyPressNumeric(button) {
                 inputElement.value = strValue.substring(0, strValue.length - 1)
             }
             break
-        default:
-            if (button === ',') {
-                button = '.'
-            }
-            if (button === '.' && inputElement.value.includes('.')) {
+        case ".":
+        case ",":
+            button = '.'
+            if (inputElement.value.includes('.')) {
                 return;
             }
+        default:
             inputElement.value = String(inputElement.value) + String(button)
             break
     }
