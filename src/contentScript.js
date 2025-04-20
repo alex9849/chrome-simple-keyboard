@@ -307,10 +307,10 @@ function onKeyPress(button) {
 
     switch (button) {
         case "{shift}":
-            handleShiftPress();
+            setShiftPress(!shiftPressed);
             break
         case "{lock}":
-            handleCapsLockPressed();
+            setLockPress(!lockPressed);
             break
         case "{enter}":
             handleEnter()
@@ -385,21 +385,6 @@ function toggleKeyboard() {
     }
 }
 
-function enterNewLine() {
-    let pos = inputElement.selectionStart;
-    let posEnd = inputElement.selectionEnd;
-
-    let button = "\n"
-    if (pos !== null) {
-        inputElement.value = inputElement.value.substring(0, pos) + button + inputElement.value.substring(posEnd);
-        inputElement.selectionStart = pos + 1;
-        inputElement.selectionEnd = pos + 1;
-    } else {
-        inputElement.value = inputElement.value + button;
-    }
-    performNativeKeyPress(inputElement, 13);
-}
-
 function handleEnter() {
     const tag = inputElement.tagName.toLowerCase();
     if (inputElement.isContentEditable || tag === 'textarea') {
@@ -407,7 +392,7 @@ function handleEnter() {
             triggerFormSubmit(inputElement)
             return;
         }
-        enterNewLine()
+        handleAddCharacters('\n')
         return
     }
     if (tag === 'input') {
@@ -434,16 +419,6 @@ function handleTab(forward = true) {
     }
 
     focusable[nextIndex].focus();
-}
-
-function handleShiftPress() {
-    shiftPressed = !shiftPressed
-    updateShiftLayout()
-}
-
-function handleCapsLockPressed() {
-    lockPressed = !lockPressed
-    updateShiftLayout()
 }
 
 function onFocusOut() {
@@ -476,7 +451,7 @@ function showKeyboard() {
     keyboardElement.style = ""
     let keyboardHeight = keyboardElement.offsetHeight
     const style = "padding-bottom: " + String(keyboardHeight) + "px !important"
-    document.body.style = style
+    document.body.style.paddingBottom = style
     for(let fixed of dialogs) {
         fixed.style = style
     }
@@ -548,7 +523,6 @@ function updateLayout() {
 }
 
 function updateShiftLayout() {
-
     keyboard.setOptions({
         layoutName: isShiftLayoutActive() ? "shift" : "default"
     });

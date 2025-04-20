@@ -1,15 +1,39 @@
 <!DOCTYPE html>
 <html>
-<head><title>Chrome Simple Keyboard Options</title></head>
+<head>
+    <title>Chrome Simple Keyboard Options</title>
+    <link rel="stylesheet" href="bulma.css">
+</head>
 <body>
-
-Keyboard language:
-<select id="language">
-</select>
-
-<div id="status"></div>
-<button id="save">Save</button>
-
+<main>
+    <section class="hero is-primary is-fullheight">
+        <div class="hero-body">
+            <div class="container">
+                <div class="columns is-centered">
+                    <div class="column is-6-tablet is-6-desktop is-4-widescreen is-4-fullhd">
+                        <div class="box">
+                            <div class="has-margin-top-medium"></div>
+                            <div class="field has-margin-bottom-medium">
+                                <label class="label " for="keyboard-layout">
+                                    Keyboard layout
+                                </label>
+                                <div class="control  ">
+                                    <select id="keyboard-layout" class="input" name="keyboard-layout">
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="has-margin-top-large">
+                                <button id="save" class="button is-link is-fullwidth">
+                                    <span>Save</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</main>
 <script src="options.js"></script>
 </body>
 </html>

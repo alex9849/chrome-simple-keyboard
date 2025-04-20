@@ -1,16 +1,16 @@
 
 // Saves options to chrome.storage
 function save_options() {
-    var language = document.getElementById('language').value;
+    const language = document.getElementById('keyboard-layout').value;
     chrome.storage.sync.set({
         language: language
     }, function() {
         // Update status to let user know options were saved.
-        var status = document.getElementById('status');
-        status.textContent = 'Options saved.';
+        const status = document.getElementById('save');
+        status.textContent = "Options saved! \u{2713}";
         setTimeout(function() {
-            status.textContent = '';
-        }, 750);
+            status.textContent = 'Save';
+        }, 2000);
     });
 }
 
@@ -24,7 +24,7 @@ function restore_options() {
         "nigerian", "nko", "norwegian", "odia", "polish", "punjabi", "russian", "russianOld", "sindhi", "spanish",
         "swedish", "telugu", "thai", "turkish", "ukrainian", "urdu", "urduStandard", "uyghur"
     ]
-    const languageNode = document.getElementById('language')
+    const languageNode = document.getElementById('keyboard-layout')
     for(const language of languages) {
         const option = document.createElement("option");
         option.value = language
