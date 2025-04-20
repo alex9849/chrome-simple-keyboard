@@ -9,7 +9,8 @@
     "url": "https://yourwebsite.com"
   },
   "scripts": {
-    "dev": "extension dev --polyfill",
+    "dev-f": "extension dev --browser=firefox",
+    "dev-c": "extension dev --browser=chrome",
     "start": "extension start --polyfill",
     "build": "extension build --polyfill"
   },

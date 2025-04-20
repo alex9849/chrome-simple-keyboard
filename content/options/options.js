@@ -53,7 +53,7 @@ function save_options() {
     const language = document.getElementById('keyboard-layout').value;
     chrome.storage.sync.set({
         language: language
-    }, function() {
+    }).then(() => {
         // Update status to let user know options were saved.
         const status = document.getElementById('save');
         status.textContent = "Options saved!";
@@ -77,7 +77,7 @@ function restore_options() {
     // Use default value color = 'red' and likesColor = true.
     chrome.storage.sync.get({
         language: 'english',
-    }, function(items) {
+    }).then(items => {
         languageNode.value = items.language;
     });
 }

@@ -116,7 +116,7 @@ let lockPressed = false;
 let isMouseDown = false;
 
 function setup() {
-    browser.storage.sync.get({
+    chrome.storage.sync.get({
         language: 'english',
     }).then(item => {
         languageLayout = languageLayouts[item.language]
