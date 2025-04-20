@@ -116,10 +116,10 @@ let lockPressed = false;
 let isMouseDown = false;
 
 function setup() {
-    chrome.storage.sync.get({
+    browser.storage.sync.get({
         language: 'english',
-    }, function(items) {
-        languageLayout = languageLayouts[items.language]
+    }).then(item => {
+        languageLayout = languageLayouts[item.language]
         const keyRowsDefault = languageLayout.layout.default;
         keyRowsDefault[keyRowsDefault.length - 1] += " {downkeyboard}"
         const keyRowsShift = languageLayout.layout.shift;
@@ -127,14 +127,13 @@ function setup() {
         if(!!keyboard) {
             //For some reason simple-keyboard only applied the change in the layout if we change something.
             // just asetting the layout is not enough
-            updateShiftLayout()
-            updateShiftLayout()
+            updateLayout()
         }
     });
 
     let styleElement = document.createElement('link')
     styleElement.rel = 'stylesheet'
-    styleElement.href = chrome.runtime.getURL('contentScript.css')
+    styleElement.href = browser.runtime.getURL('content/keyboard/contentScript.css')
     document.head.appendChild(styleElement);
 
     keyboardElement = document.createElement('div')
