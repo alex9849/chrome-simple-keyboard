@@ -1,7 +1,7 @@
 'use strict';
 
 import Keyboard from 'simple-keyboard';
-import './contentScript.css';
+import cssURL from './contentScript.css';
 import {triggerElementAction, isVisible, triggerFormSubmit, performNativeKeyPress, isChildElement} from './utils'
 import arabic from "simple-keyboard-layouts/build/layouts/arabic";
 import assamese from "simple-keyboard-layouts/build/layouts/assamese";
@@ -125,15 +125,13 @@ function setup() {
         const keyRowsShift = languageLayout.layout.shift;
         keyRowsShift[keyRowsShift.length - 1] += " {downkeyboard}"
         if(!!keyboard) {
-            //For some reason simple-keyboard only applied the change in the layout if we change something.
-            // just asetting the layout is not enough
             updateLayout()
         }
     });
 
     let styleElement = document.createElement('link')
     styleElement.rel = 'stylesheet'
-    styleElement.href = browser.runtime.getURL('content/keyboard/contentScript.css')
+    styleElement.href = cssURL
     document.head.appendChild(styleElement);
 
     keyboardElement = document.createElement('div')
