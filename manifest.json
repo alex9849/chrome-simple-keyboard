@@ -26,9 +26,6 @@
       "run_at": "document_idle",
       "js": [
         "content/keyboard/contentScript.js"
-      ],
-      "css": [
-        "content/keyboard/contentScript.css"
       ]
     }
   ],
