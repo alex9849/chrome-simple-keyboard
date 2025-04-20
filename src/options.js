@@ -56,7 +56,7 @@ function save_options() {
     }, function() {
         // Update status to let user know options were saved.
         const status = document.getElementById('save');
-        status.textContent = "Options saved! \u{2713}";
+        status.textContent = "Options saved!";
         setTimeout(function() {
             status.textContent = 'Save';
         }, 2000);
