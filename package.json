@@ -1,12 +1,12 @@
 {
-  "private": true,
+  "private": false,
   "name": "simple-virtual-keyboard",
-  "description": "An Extension.js example.",
-  "version": "0.0.1",
+  "description": "A native virtual keyboard based on the simple-keyboard package",
+  "version": "0.5.7",
   "author": {
-    "name": "Your Name",
-    "email": "your@email.com",
-    "url": "https://yourwebsite.com"
+    "name": "Alexander Liggesmeyer",
+    "email": "projects@liggesmeyer.net",
+    "url": "https://alexander.liggesmeyer.net"
   },
   "scripts": {
     "dev-f": "extension dev --browser=firefox",

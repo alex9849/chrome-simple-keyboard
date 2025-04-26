@@ -100,7 +100,7 @@ const languageLayouts = {
 }
 
 const numericLayout = {
-    default: ["1 2 3 {bksp}", "4 5 6 {enter}", "7 8 9 .", "{tab} 0  {downkeyboard}"],
+    default: ["1 2 3 {bksp}", "4 5 6 {enter}", "7 8 9 .", "{tab} 0 - {downkeyboard}"],
 }
 
 const querySelector = 'input:not([readonly]), textarea:not([readonly])'
@@ -136,6 +136,7 @@ function setup() {
 
     keyboardElement = document.createElement('div')
     keyboardElement.id = "virtual-keyboard"
+    keyboardElement.style = "display: none"
     keyboardElement.onmousedown = e => e.preventDefault()
     keyboardElement.ontouchstart = e => e.preventDefault()
     document.body.append(keyboardElement)
@@ -207,15 +208,16 @@ function onPhysicalKeyDown(event) {
     if(!inputElementNumeric && event.key === 'Shift') {
         setShiftPress(true)
     }
-    //if(!inputElementNumeric && event.key === 'CapsLock') {
-    //    setLockPress(event.getModifierState("CapsLock"))
-    //}
 
     // Block physical inputs when editing a numeric field
-    if (['1', '2', '3', '4', '5', '6', '7', '8', '9', '0', 'Backspace', 'Tab', 'Enter'].includes(event.key)) {
+    if (['1', '2', '3', '4', '5', '6', '7', '8', '9', '0', '-', 'Backspace', 'Tab', 'Enter',
+        'ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown'].includes(event.key)) {
         return event
     }
     if (event.key === '.' && !inputElement.value.includes('.')) {
+        return event
+    }
+    if (event.key === '-' && inputElement.selectionStart === 0 && !inputElement.value.includes('-')) {
         return event
     }
 
@@ -291,13 +293,16 @@ function onKeyPress(button) {
     }
 
     if (inputElementNumeric) {
-        if(![0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 0, '{bksp}', ',', '.', '{tab}', '{enter}'].some(x => String(x) === button)) {
+        if(![0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 0, '-', '{bksp}', ',', '.', '{tab}', '{enter}'].some(x => String(x) === button)) {
             return
         }
         if(button === ',') {
             button = '.'
         }
         if (button === '.' && inputElement.value.includes('.')) {
+            return;
+        }
+        if (button === '-' && (inputElement.selectionStart !== 0 || inputElement.value.includes('-'))) {
             return;
         }
     }
