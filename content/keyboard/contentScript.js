@@ -463,9 +463,7 @@ function autoToggleKeyboard() {
     if(isMouseDown) {
         return
     }
-
-    console.log(document.activeElement.shadowRoot?.activeElement ?? "nichts");
-
+    
     if(document.activeElement.matches(querySelector)) {
         if (inputElement === document.activeElement) {
             return
