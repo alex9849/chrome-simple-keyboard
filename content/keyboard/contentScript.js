@@ -463,15 +463,26 @@ function autoToggleKeyboard() {
     if(isMouseDown) {
         return
     }
+
+    console.log(document.activeElement.shadowRoot?.activeElement ?? "nichts");
+
     if(document.activeElement.matches(querySelector)) {
         if (inputElement === document.activeElement) {
             return
         }
+
         onFocus(document.activeElement)
+    } else if(document.activeElement.shadowRoot?.activeElement.matches(querySelector)) {
+        if (inputElement === document.activeElement.shadowRoot.activeElement){
+            return
+        }
+
+        onFocus(document.activeElement.shadowRoot.activeElement)
     } else {
         if (inputElement === null) {
             return;
         }
+
         onFocusOut()
     }
 }
