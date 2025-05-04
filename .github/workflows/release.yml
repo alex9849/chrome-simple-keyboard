@@ -19,7 +19,7 @@ jobs:
         run: |
           npm install
           npm run build
-          cd dist/chrome && zip -r simple-virtual-keyboard.zip ./* && cd ..
+          cd dist/chrome && zip -r simple-virtual-keyboard.zip ./* && cd ../..
           mv dist/chrome/simple-virtual-keyboard.zip simple-virtual-keyboard.zip
       - name: Archive extension
         uses: actions/upload-artifact@v4
