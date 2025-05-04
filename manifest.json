@@ -3,7 +3,7 @@
   "manifest_version": 3,
   "version": "0.5.6",
   "name": "simple-virtual-keyboard",
-  "chromium:key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA6v2M+NZplC6IRmj6OVHh\nnzBfRfSIDm2rE3PNOyVLKSykOssh3onIDXcnrbQxIVe+pCqNQPvF+zSLTmvv81Yk\nYCY2nnMPYSOxJC6MPIee4NW+MFfCKUapt9a8TTL7W2EHrO8apvztop5WglcyTXdT\n4JPsl0LFV5Kz481cI1SHapL1tCWmRJx3IyZpNcYwnfUrSNUWeVoQY08pYZiF1hFS\nrjTWoxDgXLwUjN5Vns5/Y9dTgUfzcTND43WZ8siSwuzzZ01YLD8VrQO2y2KlYAbZ\nEddBl+ne29OPpW+GgcE861cpNvWZvnyca3swr9wYduhbTgADZef/Fc6Y94/8KTHq\nIwIDAQAB",
+  "chromium:key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA6v2M+NZplC6IRmj6OVHhnzBfRfSIDm2rE3PNOyVLKSykOssh3onIDXcnrbQxIVe+pCqNQPvF+zSLTmvv81YkYCY2nnMPYSOxJC6MPIee4NW+MFfCKUapt9a8TTL7W2EHrO8apvztop5WglcyTXdT4JPsl0LFV5Kz481cI1SHapL1tCWmRJx3IyZpNcYwnfUrSNUWeVoQY08pYZiF1hFSrjTWoxDgXLwUjN5Vns5/Y9dTgUfzcTND43WZ8siSwuzzZ01YLD8VrQO2y2KlYAbZEddBl+ne29OPpW+GgcE861cpNvWZvnyca3swr9wYduhbTgADZef/Fc6Y94/8KTHqIwIDAQAB",
   "description": "A native virtual keyboard based on the simple-keyboard package.",
   "icons": {
     "48": "images/icon_128.png"
