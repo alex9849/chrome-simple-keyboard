@@ -256,7 +256,6 @@ export function setupKeyboard() {
   keyboardStyleElement = document.createElement('link')
   keyboardStyleElement.rel = 'stylesheet'
   keyboardStyleElement.href = cssURL
-  keyboardStyleElement.dataset.keyboardOwner = 'cocktailpi'
   document.head.appendChild(keyboardStyleElement);
 
   keyboardElement = document.createElement('div')
