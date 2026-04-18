@@ -50,7 +50,7 @@ import urdu from "simple-keyboard-layouts/build/layouts/urdu";
 import urduStandard from "simple-keyboard-layouts/build/layouts/urduStandard";
 import uyghur from "simple-keyboard-layouts/build/layouts/uyghur";
 
-const languageLayouts = {
+export const languageLayouts = {
   arabic,
   assamese,
   armenianEastern,
@@ -114,6 +114,7 @@ let languageLayout = english;
 let shiftPressed = false;
 let lockPressed = false;
 let isMouseDown = false;
+let enableKeyboard = true;
 
 export function setLanguageLayout(layout) {
   languageLayout = languageLayouts[layout] || english
@@ -121,6 +122,29 @@ export function setLanguageLayout(layout) {
 
 export function getLanguageLayout() {
   return languageLayout
+}
+
+export function setEnableKeyboard(value) {
+  enableKeyboard = value
+  if (value) {
+    const activeInputElement = getActiveInputElement()
+    if (!activeInputElement || activeInputElement.matches(".no-keyboard, .no-keyboard-no-toggler")) {
+      return
+    }
+
+    if (inputElement !== activeInputElement) {
+      autoToggleKeyboard()
+      return
+    }
+
+    hideKeyboardToggler();
+    showKeyboard();
+    return
+  }
+
+  if (isKeyboardShown()) {
+    hideKeyboard()
+  }
 }
 
 export function setupKeyboard() {
@@ -185,6 +209,9 @@ export function setupKeyboard() {
 }
 
 function isKeyboardShown() {
+  if(!keyboardElement) {
+    return false
+  }
   return isVisible(keyboardElement)
 }
 
@@ -359,6 +386,11 @@ function onFocus(target) {
 
   updateLayout();
   hideKeyboardToggler();
+  if (!enableKeyboard) {
+    hideKeyboard();
+    return;
+  }
+
   showKeyboard();
 
   const remainingHeight = window.innerHeight - keyboardElement.offsetHeight
@@ -378,6 +410,10 @@ function hideKeyboardToggler() {
 }
 
 function toggleKeyboard() {
+  if (!enableKeyboard) {
+    return;
+  }
+
   if (keyboardElement.style.display === "none") {
     showKeyboard();
   } else {
@@ -443,6 +479,11 @@ function recoverNumeric() {
 }
 
 function showKeyboard() {
+  if (!enableKeyboard) {
+    hideKeyboard();
+    return;
+  }
+
   const dialogs = document.querySelectorAll('.fixed-full')
   if(keyboardHideTask != null) {
     clearTimeout(keyboardHideTask)
@@ -457,23 +498,31 @@ function showKeyboard() {
   }
 }
 
+function getActiveInputElement() {
+  if (document.activeElement.matches(querySelector)) {
+    return document.activeElement
+  }
+
+  if (document.activeElement.shadowRoot?.activeElement.matches(querySelector)) {
+    return document.activeElement.shadowRoot.activeElement
+  }
+
+  return null
+}
+
 function autoToggleKeyboard() {
   if(isMouseDown) {
     return
   }
 
-  if(document.activeElement.matches(querySelector)) {
-    if (inputElement === document.activeElement) {
+  const activeInputElement = getActiveInputElement()
+
+  if(activeInputElement) {
+    if (inputElement === activeInputElement) {
       return
     }
 
-    onFocus(document.activeElement)
-  } else if(document.activeElement.shadowRoot?.activeElement.matches(querySelector)) {
-    if (inputElement === document.activeElement.shadowRoot.activeElement){
-      return
-    }
-
-    onFocus(document.activeElement.shadowRoot.activeElement)
+    onFocus(activeInputElement)
   } else {
     if (inputElement === null) {
       return;
