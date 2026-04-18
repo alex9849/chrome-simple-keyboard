@@ -285,7 +285,6 @@ export function setupKeyboard() {
     const handler = event => {
       if(isChildElement(event.target, keyboardElement)) {
         event.preventDefault()
-        event.stopImmediatePropagation()
       }
     }
     windowEventHandlers.set(type, handler)
