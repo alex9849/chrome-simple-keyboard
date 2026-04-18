@@ -115,6 +115,28 @@ let shiftPressed = false;
 let lockPressed = false;
 let isMouseDown = false;
 let enableKeyboard = true;
+let autoToggleIntervalId = null;
+let listenersRegistered = false;
+let keyboardStyleElement;
+
+const windowEventTypes = ['input', 'pointerdown', 'mousedown', 'pointerup', 'mouseup', 'selectstart', 'click']
+const windowEventHandlers = new Map()
+
+const bodyMouseDownHandler = () => {
+  isMouseDown = true;
+}
+
+const bodyMouseUpHandler = () => {
+  onMouseUp();
+}
+
+const bodyKeyDownHandler = event => {
+  onPhysicalKeyDown(event);
+}
+
+const bodyKeyUpHandler = event => {
+  onPhysicalKeyUp(event);
+}
 
 function appendDownKeyboardKey(rows = []) {
   if (!rows.length) {
@@ -175,14 +197,67 @@ export function setEnableKeyboard(value) {
   }
 }
 
-export function setupKeyboard() {
-  if (!languageLayout) {
-    languageLayout = english
+function removeExistingKeyboardDom() {
+  document.querySelectorAll('#virtual-keyboard, #keyboard-toggler').forEach(element => {
+    element.remove()
+  })
+}
+
+function destroyKeyboard() {
+  if (autoToggleIntervalId !== null) {
+    clearInterval(autoToggleIntervalId)
+    autoToggleIntervalId = null
   }
-  let styleElement = document.createElement('link')
-  styleElement.rel = 'stylesheet'
-  styleElement.href = cssURL
-  document.head.appendChild(styleElement);
+
+  if (listenersRegistered && document.body) {
+    document.body.removeEventListener('mousedown', bodyMouseDownHandler)
+    document.body.removeEventListener('mouseup', bodyMouseUpHandler)
+    document.body.removeEventListener('keydown', bodyKeyDownHandler)
+    document.body.removeEventListener('keyup', bodyKeyUpHandler)
+    windowEventTypes.forEach(type => {
+      const handler = windowEventHandlers.get(type)
+      if (handler) {
+        window.removeEventListener(type, handler, true)
+      }
+    })
+    listenersRegistered = false
+  }
+
+  if (keyboard?.destroy) {
+    keyboard.destroy()
+  }
+  keyboard = null
+
+  if (keyboardHideTask != null) {
+    clearTimeout(keyboardHideTask)
+    keyboardHideTask = null
+  }
+
+  inputElement = null
+  inputElementNumeric = false
+  shiftPressed = false
+  lockPressed = false
+  isMouseDown = false
+
+  removeExistingKeyboardDom()
+
+  if (keyboardStyleElement?.isConnected) {
+    keyboardStyleElement.remove()
+  }
+  keyboardStyleElement = null
+}
+
+export function setupKeyboard() {
+  destroyKeyboard()
+
+  if (!languageLayout) {
+    languageLayout = createKeyboardLayout(english)
+  }
+  keyboardStyleElement = document.createElement('link')
+  keyboardStyleElement.rel = 'stylesheet'
+  keyboardStyleElement.href = cssURL
+  keyboardStyleElement.dataset.keyboardOwner = 'cocktailpi'
+  document.head.appendChild(keyboardStyleElement);
 
   keyboardElement = document.createElement('div')
   keyboardElement.id = "virtual-keyboard"
@@ -201,18 +276,22 @@ export function setupKeyboard() {
   keyboardTogglerElement.ontouchstart = e => e.preventDefault()
   keyboardTogglerElement.onclick = e => toggleKeyboard();
   document.body.append(keyboardTogglerElement);
-  document.body.addEventListener('mousedown', e => isMouseDown = true);
-  document.body.addEventListener('mouseup', e => onMouseUp());
-  document.body.addEventListener('keydown', e => onPhysicalKeyDown(e));
-  document.body.addEventListener('keyup', e => onPhysicalKeyUp(e));
+  document.body.addEventListener('mousedown', bodyMouseDownHandler);
+  document.body.addEventListener('mouseup', bodyMouseUpHandler);
+  document.body.addEventListener('keydown', bodyKeyDownHandler);
+  document.body.addEventListener('keyup', bodyKeyUpHandler);
 
-  ['input', 'pointerdown', 'mousedown', 'pointerup', 'mouseup', 'selectstart', 'click'].forEach(key => {
-    window.addEventListener(key, event => {
+  windowEventTypes.forEach(type => {
+    const handler = event => {
       if(isChildElement(event.target, keyboardElement)) {
         event.preventDefault()
+        event.stopImmediatePropagation()
       }
-    }, true);
+    }
+    windowEventHandlers.set(type, handler)
+    window.addEventListener(type, handler, true);
   });
+  listenersRegistered = true
 
   keyboard = new Keyboard({
     onKeyPress: button => onKeyPress(button),
@@ -230,7 +309,7 @@ export function setupKeyboard() {
     physicalKeyboardHighlight: true,
     physicalKeyboardHighlightBgColor: "#b6b6b6"
   });
-  setInterval(() => {
+  autoToggleIntervalId = setInterval(() => {
     autoToggleKeyboard();
   }, 200);
   hideKeyboard()
