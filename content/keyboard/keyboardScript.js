@@ -110,14 +110,42 @@ let keyboardTogglerElement;
 let inputElement;
 let inputElementNumeric = false
 let keyboardHideTask = null;
-let languageLayout = english;
+let languageLayout = createKeyboardLayout(english);
 let shiftPressed = false;
 let lockPressed = false;
 let isMouseDown = false;
 let enableKeyboard = true;
 
+function appendDownKeyboardKey(rows = []) {
+  if (!rows.length) {
+    return rows
+  }
+
+  const normalizedRows = [...rows]
+  const lastRowIndex = normalizedRows.length - 1
+  if (!normalizedRows[lastRowIndex].includes("{downkeyboard}")) {
+    normalizedRows[lastRowIndex] += " {downkeyboard}"
+  }
+  return normalizedRows
+}
+
+function createKeyboardLayout(layout) {
+  const resolvedLayout = typeof layout === "string" ? languageLayouts[layout] : layout
+  const fallbackLayout = resolvedLayout || english
+
+  return {
+    ...fallbackLayout,
+    layout: {
+      ...fallbackLayout.layout,
+      default: appendDownKeyboardKey(fallbackLayout.layout?.default),
+      shift: appendDownKeyboardKey(fallbackLayout.layout?.shift)
+    }
+  }
+}
+
 export function setLanguageLayout(layout) {
-  languageLayout = languageLayouts[layout] || english
+  languageLayout = createKeyboardLayout(layout)
+  updateLayout()
 }
 
 export function getLanguageLayout() {
