@@ -148,6 +148,12 @@ function appendDownKeyboardKey(rows = []) {
   if (!normalizedRows[lastRowIndex].includes("{downkeyboard}")) {
     normalizedRows[lastRowIndex] += " {downkeyboard}"
   }
+  if (normalizedRows[lastRowIndex].includes("@")) {
+    normalizedRows[lastRowIndex] = normalizedRows[lastRowIndex].replace("@ ", "")
+  }
+  if (normalizedRows[lastRowIndex].includes(".com")) {
+    normalizedRows[lastRowIndex] = normalizedRows[lastRowIndex].replace(".com ", "")
+  }
   return normalizedRows
 }
 
